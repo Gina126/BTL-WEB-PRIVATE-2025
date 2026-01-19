@@ -1,0 +1,15 @@
+# 1 Logs
+node_modules/
+npm-debug.log*
+*.log
+
+#  Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+
+
+.DS_Store
+Thumbs.db
+
+
+.env
