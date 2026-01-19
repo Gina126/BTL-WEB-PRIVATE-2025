@@ -7,9 +7,8 @@ npm-debug.log*
 .vscode/*
 !.vscode/extensions.json
 
-
 .DS_Store
 Thumbs.db
-
+Desktop.ini
 
 .env
