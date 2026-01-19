@@ -1,13 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/main.css" />
-    <title>Document</title>
-  </head>
-  <body>
-    <h1>Hello world</h1>
-  </body>
-  <script src="js/main.js"></script>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rophim</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+    <header id="header">
+        <div class="header-elements">
+            
+            <div class="for-mobile menu-toggle"><i class="fa-solid fa-bars"></i></div>
+            <div class="for-mobile search-toggle"><i class="fa-solid fa-magnifying-glass"></i></div>
+
+            <a id="logo" href="/" title="Rophim">
+                <img src="./assets/images/logos/logo.svg" alt="RoPhim">
+            </a>
+
+            <div id="search">
+                <div class="search-elements">
+                    <div class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <input id="main-search" class="search-input" placeholder="Tìm kiếm phim, diễn viên" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="el-group">
+                
+                <div id="main_menu">
+                    <div class="menu-item"><a href="#">Phim Lẻ</a></div>
+                    <div class="menu-item"><a href="#">Phim Bộ</a></div>
+                    
+                    <div class="menu-item menu-item-sub">
+                        <div class="dropdown">
+                            <a>Thể loại <i class="fa-solid fa-caret-down ms-2"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item menu-item-sub">
+                        <div class="dropdown">
+                            <a>Quốc gia <i class="fa-solid fa-caret-down ms-2"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item"><a href="#">Xem Chung</a></div>
+                    
+                    <div class="menu-item menu-item-sub">
+                        <div class="dropdown">
+                            <a>Thêm <i class="fa-solid fa-caret-down ms-2"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <a href="#" class="highlight">
+                            <span class="new me-2">NEW</span>Rổ Bóng
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flex-grow-1"></div>
+
+                <div class="app-download">
+                    <a class="app-download-button">
+                        <div class="inc-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9998 16.8992C11.1655 16.8992 11.2998 16.7649 11.2998 16.5992V11.5982C11.2998 9.28322 13.1838 7.39922 15.4998 7.39922H18.7998C18.9238 7.39922 19.0446 7.41106 19.1616 7.43327C19.3745 7.47368 19.5998 7.32682 19.5998 7.11012V6.69922C19.5998 6.67022 19.5968 6.64022 19.5918 6.61222C19.2488 4.66722 17.4468 3.19922 15.4008 3.19922H6.79982C4.42882 3.19922 2.49982 5.12822 2.49982 7.49922V12.5982C2.49982 14.9692 4.42882 16.8992 6.79982 16.8992H8.24282L7.86182 19.2492H5.85982C5.44582 19.2492 5.10982 19.5852 5.10982 19.9992C5.10982 20.4132 5.44582 20.7492 5.85982 20.7492H10.7598C11.1738 20.7492 11.5098 20.4132 11.5098 19.9992C11.5098 19.5852 11.1738 19.2492 10.7598 19.2492H9.38082L9.76182 16.8992H10.9998Z" fill="#ffc107"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M17.1912 18.4564C16.7712 18.4564 16.4302 18.1154 16.4302 17.6954C16.4302 17.2754 16.7712 16.9344 17.1912 16.9344C17.6112 16.9344 17.9522 17.2754 17.9522 17.6954C17.9522 18.1154 17.6112 18.4564 17.1912 18.4564ZM18.8002 8.90039H15.5002C14.0362 8.90039 12.8002 10.1364 12.8002 11.5994V18.0994C12.8002 19.5884 14.0112 20.7994 15.5002 20.7994H18.8002C20.2892 20.7994 21.5002 19.5884 21.5002 18.0994V11.5994C21.5002 10.1364 20.2642 8.90039 18.8002 8.90039Z" fill="#ffffff"></path></svg>
+                        </div>
+                        <div class="text text-light">
+                            <span>Tải ứng dụng</span>
+                            <strong>RoPhim</strong>
+                        </div>
+                    </a>
+                </div>
+
+                <div id="main_user">
+                    <a class="button-user button-login" href="#">
+                        <div class="line-center">
+                            <i class="fa-solid fa-user ms-1"></i>
+                            <span>Thành viên</span>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </header>
+    
+    <main style="background: url('./assets/images/banners/home-background.jpg') no-repeat center top/cover; height: 100vh;">
+    </main>
+    <footer id="footer">
+        <div class="footer-elements">
+            
+            <div class="footer-bg-icon">
+                <img src="./assets/images/footer/footer-icon.svg" alt="Background">
+            </div>
+
+            <div class="footer-content">
+                
+                <div class="vn-badge">
+                    <i class="fa-solid fa-star yellow-star"></i>
+                    <span>Hoàng Sa & Trường Sa là của Việt Nam!</span>
+                </div>
+
+                <div class="brand-social-row">
+                    <a href="#" class="footer-logo">
+                        <img src="./assets/images/logos/logo.svg" alt="RoPhim">
+                    </a>
+                    
+                    <div class="vertical-line"></div>
+
+                    <div class="socials">
+                        <a href="#" class="social-item"><i class="fa-brands fa-telegram"></i></a>
+                        <a href="#" class="social-item"><i class="fa-brands fa-discord"></i></a>
+                        <a href="#" class="social-item"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" class="social-item"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class="social-item"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#" class="social-item"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="social-item"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-menu">
+                    <a href="#">Hỏi-Đáp</a>
+                    <a href="#">Chính sách bảo mật</a>
+                    <a href="#">Điều khoản sử dụng</a>
+                    <a href="#">Giới thiệu</a>
+                    <a href="#">Liên hệ</a>
+                </div>
+
+                <div class="footer-menu sub-links">
+                    <a href="#">Dongphim</a>
+                    <a href="#">Ghienphim</a>
+                    <a href="#">Motphim</a>
+                    <a href="#">Subnhanh</a>
+                </div>
+
+                <div class="footer-notice">
+                    RoPhim – Phim hay cả rổ - Trang xem phim online chất lượng cao miễn phí Vietsub, thuyết minh, lồng tiếng full HD. Kho phim mới khổng lồ, phim chiếu rạp, phim bộ, phim lẻ từ nhiều quốc gia như Việt Nam, Hàn Quốc, Trung Quốc, Thái Lan, Nhật Bản, Âu Mỹ… đa dạng thể loại. Khám phá nền tảng phim trực tuyến hay nhất 2024 chất lượng 4K!
+                </div>
+                
+                <div class="footer-copyright">
+                    © 2024 RoPhim
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
 </html>
