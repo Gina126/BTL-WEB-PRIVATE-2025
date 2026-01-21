@@ -56,7 +56,7 @@ async function getCategoriesList() {
  * Lấy danh sách tất cả quốc gia từ API
  * @returns {Promise} - Promise chứa danh sách quốc gia
  */
- async function getCountriesList() {
+async function getCountriesList() {
     const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.COUNTRIES_LIST}`;
     return await fetchAPI(url);
 }
@@ -139,14 +139,14 @@ async function getSeriesMovies(page = 1) {
 async function getMovieStreamLink(slug, episode = 1) {
     // Lấy thông tin chi tiết phim trước
     const result = await getMovieDetail(slug);
-    
+
     if (!result.success) {
         return result;
     }
 
     try {
         const movie = result.data.movie;
-        
+
         // Kiểm tra xem phim có episodes không
         if (!movie.episodes || movie.episodes.length === 0) {
             return { success: false, error: 'Không tìm thấy tập phim' };
@@ -154,10 +154,10 @@ async function getMovieStreamLink(slug, episode = 1) {
 
         // Lấy server đầu tiên (thường là server chính)
         const serverData = movie.episodes[0];
-        
+
         // Tìm tập phim theo số tập
         const episodeData = serverData.server_data.find(ep => ep.name === episode.toString());
-        
+
         if (!episodeData) {
             return { success: false, error: 'Không tìm thấy tập này' };
         }

@@ -1,70 +1,69 @@
 
 const API_CONFIG = {
-    
+
     BASE_URL: 'https://ophim1.com',
-    
-   
+
+
     BACKUP_URL: 'https://ophim18.cc',
-    
-    
+
+
     ENDPOINTS: {
-        
+
         CATEGORIES_LIST: '/v1/api/the-loai',
-        
-       
+
+
         COUNTRIES_LIST: '/v1/api/quoc-gia',
-        
-       
+
+
         MOVIES_LIST: '/v1/api/home',
-        
-        
+
+
         MOVIE_DETAIL: '/v1/api/phim/[slug]',
-        
-        
+
+
         SEARCH: '/v1/api/tim-kiem?keyword=[keyword]',
-        
-      
+
+
         CATEGORY: '/v1/api/the-loai/[slug]',
-        
-      
+
+
         COUNTRY: '/v1/api/quoc-gia/[slug]',
-        
-       
+
+
         SINGLE_MOVIES: '/v1/api/danh-sach/phim-le',
-        
-      
+
+
         SERIES_MOVIES: '/v1/api/danh-sach/phim-bo'
     },
-    
-    // Các tham số mặc định
+
+
     DEFAULT_PARAMS: {
         page: 1,
         limit: 24
     }
 };
 
-// Cấu hình ứng dụng
+
 const APP_CONFIG = {
-    // Tên ứng dụng
+
     APP_NAME: 'RoPhim',
-    
-    // Số lượng phim hiển thị mỗi trang
+
     ITEMS_PER_PAGE: 24,
-    
-    // Độ dài tối đa của mô tả phim (ký tự)
+
+
     MAX_DESCRIPTION_LENGTH: 200,
-    
-    // Thời gian debounce cho search (ms)
+
+
     SEARCH_DEBOUNCE_TIME: 500,
-    
-    // Số lượng phim hiển thị trong slider
+
+
     SLIDER_ITEMS: 10,
-    
-    // Thời gian auto slide (ms)
+
+
     AUTO_SLIDE_INTERVAL: 5000
 };
 
-// Danh sách thể loại phim (Fallback nếu API lỗi - Updated từ OPHIM API)
+
 const CATEGORIES = [
     { slug: 'hanh-dong', name: 'Hành Động' },
     { slug: 'tinh-cam', name: 'Tình Cảm' },
@@ -91,7 +90,7 @@ const CATEGORIES = [
     { slug: 'short-drama', name: 'Short Drama' }
 ];
 
-// Danh sách quốc gia (Fallback nếu API lỗi - Updated từ OPHIM API)
+
 const COUNTRIES = [
     { slug: 'trung-quoc', name: 'Trung Quốc' },
     { slug: 'han-quoc', name: 'Hàn Quốc' },
@@ -140,7 +139,7 @@ const COUNTRIES = [
     { slug: 'quoc-gia-khac', name: 'Quốc Gia Khác' }
 ];
 
-// Storage keys cho LocalStorage
+
 const STORAGE_KEYS = {
     FAVORITES: 'rophim_favorites',
     WATCH_HISTORY: 'rophim_watch_history',
@@ -148,7 +147,7 @@ const STORAGE_KEYS = {
     CONTINUE_WATCHING: 'rophim_continue_watching'
 };
 
-// Export các cấu hình (để sử dụng trong các file khác)
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         API_CONFIG,

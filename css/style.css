@@ -54,6 +54,17 @@ ul {
   flex-grow: 1;
 }
 
+/* Component Placeholders - Prevent layout shift */
+#header-placeholder {
+  min-height: 70px;
+  background-color: rgba(25, 27, 36, 0.98);
+}
+
+#footer-placeholder {
+  min-height: 380px;
+  background-color: #0f111a;
+}
+
 #header {
   position: fixed;
   top: 0;

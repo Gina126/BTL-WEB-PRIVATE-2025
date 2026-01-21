@@ -9,10 +9,11 @@
  * - Và các tương tác UI chung khác
  */
 
-// Đợi DOM load xong
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
+// ⚠️ KHÔNG tự động init ở đây
+// components.js sẽ call initializeApp() sau khi load header/footer
+// document.addEventListener('DOMContentLoaded', function() {
+//     initializeApp();
+// });
 
 /**
  * Khởi tạo ứng dụng
