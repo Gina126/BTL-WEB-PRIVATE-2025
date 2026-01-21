@@ -161,7 +161,7 @@ Luôn đảm bảo bạn có code mới nhất từ `develop`:
 
 ```bash
 # Thêm upstream nếu chưa có
-git remote add upstream https://github.com/ORIGINAL_OWNER/BTL-WEB-PRIVATE-2025.git
+git remote add upstream https://github.com/Gina126/BTL-WEB-PRIVATE-2025.git
 
 # Fetch tất cả branches từ upstream
 git fetch upstream
