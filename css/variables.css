@@ -1,0 +1,26 @@
+:root {
+    
+    
+    
+    --bg-color: #191B24;          
+    --top-bg-default: #202331;    
+    --footer-bg: #0F111A;         
+    
+    --text-base: #aaa;            
+    --text-light: #fff;           
+    
+    
+    --primary-color: #FFD875;       
+    --primary-color-hover: #FFDE8A; 
+    --primary-text: #FFD875;
+    
+    
+    --bg-2: #282B3A;
+    --bg-3: #2F3346;
+    --bg-4: #3E435C;
+    --border-color: #ffffff10;    
+    
+    
+    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Tektur', sans-serif;
+}

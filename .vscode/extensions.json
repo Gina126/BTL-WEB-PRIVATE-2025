@@ -1,6 +1,18 @@
 {
   "recommendations": [
-    "seaton.gitmoji",
-    "ritwickdey.LiveServer"
+    // Live server để test website
+    "ritwickdey.LiveServer",
+    
+    // Format code tự động
+    "esbenp.prettier-vscode",
+    
+    // Git workflow tốt hơn
+    "eamodio.gitlens",
+    
+    // Auto rename HTML tags
+    "formulahendry.auto-rename-tag",
+    
+    // File icons đẹp hơn
+    "pkief.material-icon-theme"
   ]
 }
