@@ -525,3 +525,38 @@ ul {
   color: #444;
   font-size: 12px;
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 32px 0 40px;
+}
+
+.page-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+  background: #141414;
+  color: #ccc;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.page-btn:hover {
+  background: #ff6600;
+  border-color: #ff6600;
+  color: #fff;
+}
+
+.page-btn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.page-info {
+  color: #aaa;
+  font-size: 14px;
+}
