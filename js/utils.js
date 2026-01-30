@@ -1,7 +1,7 @@
 /**
  * utils.js - Các hàm utility dùng chung
- * 
- * File này chứa các hàm phụ trợ như format ngày tháng, 
+ *
+ * File này chứa các hàm phụ trợ như format ngày tháng,
  * rút gọn text, xử lý localStorage, debounce, throttle...
  */
 
@@ -12,9 +12,9 @@
  * @returns {string} - Text đã được rút gọn
  */
 function truncateText(text, maxLength = APP_CONFIG.MAX_DESCRIPTION_LENGTH) {
-    if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + '...';
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength).trim() + "...";
 }
 
 /**
@@ -23,8 +23,8 @@ function truncateText(text, maxLength = APP_CONFIG.MAX_DESCRIPTION_LENGTH) {
  * @returns {string} - Năm đã format
  */
 function formatYear(year) {
-    if (!year) return 'Đang cập nhật';
-    return year.toString();
+  if (!year) return "Đang cập nhật";
+  return year.toString();
 }
 
 /**
@@ -33,8 +33,8 @@ function formatYear(year) {
  * @returns {string} - Thời lượng đã format
  */
 function formatDuration(time) {
-    if (!time) return 'Đang cập nhật';
-    return time;
+  if (!time) return "Đang cập nhật";
+  return time;
 }
 
 /**
@@ -43,10 +43,12 @@ function formatDuration(time) {
  * @returns {string} - HTML badge cho chất lượng
  */
 function formatQuality(quality) {
-    if (!quality) return '';
-    
-    const qualityClass = quality.toLowerCase().includes('hd') ? 'quality-hd' : 'quality-cam';
-    return `<span class="badge ${qualityClass}">${quality}</span>`;
+  if (!quality) return "";
+
+  const qualityClass = quality.toLowerCase().includes("hd")
+    ? "quality-hd"
+    : "quality-cam";
+  return `<span class="badge ${qualityClass}">${quality}</span>`;
 }
 
 /**
@@ -55,8 +57,8 @@ function formatQuality(quality) {
  * @returns {string} - HTML badge cho trạng thái
  */
 function formatStatus(status) {
-    if (!status) return '';
-    return `<span class="badge badge-status">${status}</span>`;
+  if (!status) return "";
+  return `<span class="badge badge-status">${status}</span>`;
 }
 
 /**
@@ -65,8 +67,8 @@ function formatStatus(status) {
  * @returns {string} - Chuỗi các thể loại ngăn cách bởi dấu phẩy
  */
 function formatCategories(categories) {
-    if (!categories || categories.length === 0) return 'Đang cập nhật';
-    return categories.map(cat => cat.name).join(', ');
+  if (!categories || categories.length === 0) return "Đang cập nhật";
+  return categories.map((cat) => cat.name).join(", ");
 }
 
 /**
@@ -75,8 +77,8 @@ function formatCategories(categories) {
  * @returns {string} - Chuỗi các quốc gia
  */
 function formatCountries(countries) {
-    if (!countries || countries.length === 0) return 'Đang cập nhật';
-    return countries.map(country => country.name).join(', ');
+  if (!countries || countries.length === 0) return "Đang cập nhật";
+  return countries.map((country) => country.name).join(", ");
 }
 
 /**
@@ -85,16 +87,16 @@ function formatCountries(countries) {
  * @returns {string} - Slug
  */
 function createSlug(title) {
-    if (!title) return '';
-    return title
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[đĐ]/g, 'd')
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
+  if (!title) return "";
+  return title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[đĐ]/g, "d")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .trim();
 }
 
 /**
@@ -104,15 +106,15 @@ function createSlug(title) {
  * @returns {Function} - Hàm đã được debounce
  */
 function debounce(func, wait = APP_CONFIG.SEARCH_DEBOUNCE_TIME) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
     };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
 /**
@@ -122,14 +124,14 @@ function debounce(func, wait = APP_CONFIG.SEARCH_DEBOUNCE_TIME) {
  * @returns {Function} - Hàm đã được throttle
  */
 function throttle(func, limit = 1000) {
-    let inThrottle;
-    return function(...args) {
-        if (!inThrottle) {
-            func.apply(this, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    };
+  let inThrottle;
+  return function (...args) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
 }
 
 /**
@@ -139,13 +141,13 @@ function throttle(func, limit = 1000) {
  * @returns {boolean} - true nếu thành công
  */
 function saveToStorage(key, value) {
-    try {
-        localStorage.setItem(key, JSON.stringify(value));
-        return true;
-    } catch (error) {
-        console.error('Error saving to localStorage:', error);
-        return false;
-    }
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    console.error("Error saving to localStorage:", error);
+    return false;
+  }
 }
 
 /**
@@ -155,13 +157,13 @@ function saveToStorage(key, value) {
  * @returns {any} - Dữ liệu đã parse
  */
 function getFromStorage(key, defaultValue = null) {
-    try {
-        const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : defaultValue;
-    } catch (error) {
-        console.error('Error reading from localStorage:', error);
-        return defaultValue;
-    }
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    console.error("Error reading from localStorage:", error);
+    return defaultValue;
+  }
 }
 
 /**
@@ -169,11 +171,11 @@ function getFromStorage(key, defaultValue = null) {
  * @param {string} key - Key cần xóa
  */
 function removeFromStorage(key) {
-    try {
-        localStorage.removeItem(key);
-    } catch (error) {
-        console.error('Error removing from localStorage:', error);
-    }
+  try {
+    localStorage.removeItem(key);
+  } catch (error) {
+    console.error("Error removing from localStorage:", error);
+  }
 }
 
 /**
@@ -182,20 +184,20 @@ function removeFromStorage(key) {
  * @returns {boolean} - true nếu thêm thành công
  */
 function addToFavorites(movie) {
-    const favorites = getFromStorage(STORAGE_KEYS.FAVORITES, []);
-    
-    // Kiểm tra xem phim đã có trong favorites chưa
-    const exists = favorites.some(fav => fav.slug === movie.slug);
-    if (exists) return false;
-    
-    favorites.unshift({
-        slug: movie.slug,
-        name: movie.name,
-        poster: movie.poster_url,
-        addedAt: new Date().toISOString()
-    });
-    
-    return saveToStorage(STORAGE_KEYS.FAVORITES, favorites);
+  const favorites = getFromStorage(STORAGE_KEYS.FAVORITES, []);
+
+  // Kiểm tra xem phim đã có trong favorites chưa
+  const exists = favorites.some((fav) => fav.slug === movie.slug);
+  if (exists) return false;
+
+  favorites.unshift({
+    slug: movie.slug,
+    name: movie.name,
+    poster: movie.poster_url,
+    addedAt: new Date().toISOString(),
+  });
+
+  return saveToStorage(STORAGE_KEYS.FAVORITES, favorites);
 }
 
 /**
@@ -204,9 +206,9 @@ function addToFavorites(movie) {
  * @returns {boolean} - true nếu xóa thành công
  */
 function removeFromFavorites(slug) {
-    const favorites = getFromStorage(STORAGE_KEYS.FAVORITES, []);
-    const filtered = favorites.filter(fav => fav.slug !== slug);
-    return saveToStorage(STORAGE_KEYS.FAVORITES, filtered);
+  const favorites = getFromStorage(STORAGE_KEYS.FAVORITES, []);
+  const filtered = favorites.filter((fav) => fav.slug !== slug);
+  return saveToStorage(STORAGE_KEYS.FAVORITES, filtered);
 }
 
 /**
@@ -215,8 +217,8 @@ function removeFromFavorites(slug) {
  * @returns {boolean} - true nếu có trong favorites
  */
 function isInFavorites(slug) {
-    const favorites = getFromStorage(STORAGE_KEYS.FAVORITES, []);
-    return favorites.some(fav => fav.slug === slug);
+  const favorites = getFromStorage(STORAGE_KEYS.FAVORITES, []);
+  return favorites.some((fav) => fav.slug === slug);
 }
 
 /**
@@ -226,25 +228,25 @@ function isInFavorites(slug) {
  * @param {number} progress - Tiến độ xem (seconds)
  */
 function saveWatchHistory(movie, episode = 1, progress = 0) {
-    const history = getFromStorage(STORAGE_KEYS.WATCH_HISTORY, []);
-    
-    // Xóa entry cũ nếu có
-    const filtered = history.filter(item => item.slug !== movie.slug);
-    
-    // Thêm entry mới lên đầu
-    filtered.unshift({
-        slug: movie.slug,
-        name: movie.name,
-        poster: movie.poster_url,
-        episode: episode,
-        progress: progress,
-        watchedAt: new Date().toISOString()
-    });
-    
-    // Giới hạn 50 phim gần nhất
-    const limited = filtered.slice(0, 50);
-    
-    return saveToStorage(STORAGE_KEYS.WATCH_HISTORY, limited);
+  const history = getFromStorage(STORAGE_KEYS.WATCH_HISTORY, []);
+
+  // Xóa entry cũ nếu có
+  const filtered = history.filter((item) => item.slug !== movie.slug);
+
+  // Thêm entry mới lên đầu
+  filtered.unshift({
+    slug: movie.slug,
+    name: movie.name,
+    poster: movie.poster_url,
+    episode: episode,
+    progress: progress,
+    watchedAt: new Date().toISOString(),
+  });
+
+  // Giới hạn 50 phim gần nhất
+  const limited = filtered.slice(0, 50);
+
+  return saveToStorage(STORAGE_KEYS.WATCH_HISTORY, limited);
 }
 
 /**
@@ -252,8 +254,9 @@ function saveWatchHistory(movie, episode = 1, progress = 0) {
  * @param {HTMLElement} element - Element cần hiển thị loading
  */
 function showLoading(element) {
-    if (!element) return;
-    element.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</div>';
+  if (!element) return;
+  element.innerHTML =
+    '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</div>';
 }
 
 /**
@@ -261,9 +264,9 @@ function showLoading(element) {
  * @param {HTMLElement} element - Element hiển thị lỗi
  * @param {string} message - Thông báo lỗi
  */
-function showError(element, message = 'Có lỗi xảy ra. Vui lòng thử lại sau.') {
-    if (!element) return;
-    element.innerHTML = `<div class="error-message"><i class="fa-solid fa-triangle-exclamation"></i> ${message}</div>`;
+function showError(element, message = "Có lỗi xảy ra. Vui lòng thử lại sau.") {
+  if (!element) return;
+  element.innerHTML = `<div class="error-message"><i class="fa-solid fa-triangle-exclamation"></i> ${message}</div>`;
 }
 
 /**
@@ -272,9 +275,9 @@ function showError(element, message = 'Có lỗi xảy ra. Vui lòng thử lại
  * @param {number} offset - Offset từ top (px)
  */
 function smoothScrollTo(element, offset = 0) {
-    if (!element) return;
-    const top = element.getBoundingClientRect().top + window.pageYOffset - offset;
-    window.scrollTo({ top, behavior: 'smooth' });
+  if (!element) return;
+  const top = element.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({ top, behavior: "smooth" });
 }
 
 /**
@@ -283,13 +286,13 @@ function smoothScrollTo(element, offset = 0) {
  * @returns {Promise<boolean>} - true nếu copy thành công
  */
 async function copyToClipboard(text) {
-    try {
-        await navigator.clipboard.writeText(text);
-        return true;
-    } catch (error) {
-        console.error('Failed to copy:', error);
-        return false;
-    }
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (error) {
+    console.error("Failed to copy:", error);
+    return false;
+  }
 }
 
 /**
@@ -298,34 +301,34 @@ async function copyToClipboard(text) {
  * @returns {string} - Số đã format
  */
 function formatNumber(num) {
-    if (!num) return '0';
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  if (!num) return "0";
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 // Export các hàm
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        truncateText,
-        formatYear,
-        formatDuration,
-        formatQuality,
-        formatStatus,
-        formatCategories,
-        formatCountries,
-        createSlug,
-        debounce,
-        throttle,
-        saveToStorage,
-        getFromStorage,
-        removeFromStorage,
-        addToFavorites,
-        removeFromFavorites,
-        isInFavorites,
-        saveWatchHistory,
-        showLoading,
-        showError,
-        smoothScrollTo,
-        copyToClipboard,
-        formatNumber
-    };
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    truncateText,
+    formatYear,
+    formatDuration,
+    formatQuality,
+    formatStatus,
+    formatCategories,
+    formatCountries,
+    createSlug,
+    debounce,
+    throttle,
+    saveToStorage,
+    getFromStorage,
+    removeFromStorage,
+    addToFavorites,
+    removeFromFavorites,
+    isInFavorites,
+    saveWatchHistory,
+    showLoading,
+    showError,
+    smoothScrollTo,
+    copyToClipboard,
+    formatNumber,
+  };
 }
