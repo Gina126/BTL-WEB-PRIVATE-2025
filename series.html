@@ -25,7 +25,8 @@
     <script src="./js/config.js"></script>
     <script src="./js/utils.js"></script>
     <script src="./js/api.js"></script>
-    <script src="./js/main.js" defer></script>
+    <script src="./js/series.js" defer></script>
+    <script src="./js/main.js"></script>
   </head>
 
   <body>
@@ -40,47 +41,7 @@
           Phim bộ
         </h2>
 
-        <div class="movies-grid" id="series-grid">
-          <!-- Movie card (Phim bộ) -->
-          <div class="movie-card">
-            <!-- Badges -->
-            <div class="movie-badges">
-              <span class="badge badge-episode">Tập 12</span>
-              <span class="badge badge-subbed">Vietsub</span>
-            </div>
-
-            <!-- Favorite -->
-            <button class="btn-favorite">
-              <i class="fa-regular fa-heart"></i>
-            </button>
-
-            <!-- Poster -->
-            <div class="movie-poster">
-              <img
-                src="https://image.tmdb.org/t/p/w500/9PFonBhy4cQy7Jz20NpMygczOkv.jpg"
-                alt="Moving"
-              />
-              <div class="poster-overlay">
-                <div class="play-icon">
-                  <i class="fa-solid fa-play"></i>
-                </div>
-              </div>
-            </div>
-
-            <!-- Info -->
-            <div class="movie-info">
-              <h3 class="movie-title">Moving</h3>
-              <p class="movie-origin-name">무빙</p>
-
-              <div class="movie-meta">
-                <span>2023</span>
-                <span>20 tập</span>
-                <span>IMDB 8.5</span>
-              </div>
-            </div>
-          </div>
-          <!-- END movie-card -->
-        </div>
+        <div class="movies-grid" id="series-grid"></div>
         <div class="pagination">
           <button class="page-btn" id="firstPage" title="Về trang đầu">
             <i class="fa-solid fa-angles-left"></i>
