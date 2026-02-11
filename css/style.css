@@ -226,14 +226,15 @@ ul {
   top: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(-10px);
-  background: rgba(10, 12, 20, 0.6);  /* Giảm xuống 60% để rõ hơn */
-  backdrop-filter: blur(40px) saturate(180%);  /* Tăng blur mạnh hơn */
+  background: rgba(10, 12, 20, 0.6); /* Giảm xuống 60% để rõ hơn */
+  backdrop-filter: blur(40px) saturate(180%); /* Tăng blur mạnh hơn */
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   min-width: 600px;
   max-width: 900px;
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
-              0 0 0 1px rgba(255, 255, 255, 0.1) inset;  /* Inner glow */
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset; /* Inner glow */
   padding: 20px;
   opacity: 0;
   visibility: hidden;
@@ -293,7 +294,7 @@ ul {
 
 .dropdown-item:hover {
   background-color: rgba(255, 216, 117, 0.15);
-  color: #FFD875;
+  color: #ffd875;
   /* Removed transform to fix yellow bar glitch */
 }
 
@@ -524,6 +525,41 @@ ul {
 .footer-copyright {
   color: #444;
   font-size: 12px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 32px 0 40px;
+}
+
+.page-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+  background: #141414;
+  color: #ccc;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.page-btn:hover {
+  background: #ff6600;
+  border-color: #ff6600;
+  color: #fff;
+}
+
+.page-btn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.page-info {
+  color: #aaa;
+  font-size: 14px;
 }
 
 .pagination {

@@ -22,7 +22,7 @@ async function loadComponent(elementId, componentPath) {
       console.error(`Element with id "${elementId}" not found`);
     }
   } catch (error) {
-    console.error('Error loading component:', error);
+    console.error("Error loading component:", error);
   }
 }
 
@@ -31,20 +31,17 @@ async function loadComponent(elementId, componentPath) {
  */
 async function loadAllComponents() {
   await Promise.all([
-    loadComponent('header-placeholder', './components/header.html'),
-    loadComponent('footer-placeholder', './components/footer.html'),
+    loadComponent("header-placeholder", "./components/header.html"),
+    loadComponent("footer-placeholder", "./components/footer.html"),
   ]);
-  
 
-  if (typeof initializeApp === 'function') {
+  if (typeof initializeApp === "function") {
     initializeApp();
   }
 }
 
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', loadAllComponents);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadAllComponents);
 } else {
- 
   loadAllComponents();
 }
