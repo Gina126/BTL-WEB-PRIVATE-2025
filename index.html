@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="./css/variables.css" />
     <link rel="stylesheet" href="./css/style.css" />
     <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/homepage.css">
 
     <!-- JavaScript modules - Load in correct order -->
     <script src="./js/components.js"></script>
@@ -26,8 +27,11 @@
     <script src="./js/api.js"></script>
     <script src="./js/main.js"></script>
     <script src="./js/home.js"></script>
+    <script src="./js/homepage.js"></script>
   </head>
+  
   <body>
+    
     <!-- Header component - loaded dynamically -->
     <div id="header-placeholder"></div>
 
@@ -37,9 +41,48 @@
       style="
         background: url(&quot;./assets/images/banners/home-background.jpg&quot;)
           no-repeat center top/cover;
-        height: 100vh;
-      "
-    ></main>
+      " class="home">
+
+      <section class="banner" id="heroBanner">
+        <div class="banner-content" id="heroContent">
+            <h1 id="heroTitle">Đang tải...</h1>
+            <p id="heroDesc">Vui lòng chờ trong giây lát</p>
+            <a href="#" class="btn-watch">Xem Ngay</a>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="movie-section">
+    <div class="section-header">
+        <h2 class="section-title">PHIM MỚI CẬP NHẬT</h2>
+        <a href="new-movies.html" class="btn-more-link">
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+    </div>
+    <div class="movie-grid" id="movieGrid"></div>
+</section>
+        <section class="movie-section">
+    <div class="section-header">
+        <h2 class="section-title">PHIM LẺ MỚI</h2>
+        <a href="movies.html" class="btn-more-link">
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+    </div>
+    <div class="movie-grid" id="phimLeGrid"></div>
+</section>
+
+<section class="movie-section">
+    <div class="section-header">
+        <h2 class="section-title">PHIM BỘ MỚI</h2>
+        <a href="series.html" class="btn-more-link">
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+    </div>
+    <div class="movie-grid" id="phimBoGrid"></div>
+</section>
+    </div>
+    </main>
+
     <!-- Footer component - loaded dynamically -->
     <div id="footer-placeholder"></div>
   </body>
