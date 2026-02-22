@@ -105,6 +105,9 @@ function renderSeries(seriesList) {
         </div>
       </div>
     `;
+    card.addEventListener("click", () => {
+      window.location.href = `./detail.html?slug=${encodeURIComponent(movie.slug)}`;
+    });
 
     seriesGrid.appendChild(card);
   });

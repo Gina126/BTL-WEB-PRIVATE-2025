@@ -98,6 +98,9 @@ function renderMovies(movies) {
         </div>
       </div>
     `;
+    card.addEventListener("click", () => {
+      window.location.href = `./detail.html?slug=${encodeURIComponent(movie.slug)}`;
+    });
 
     moviesGrid.appendChild(card);
   });
