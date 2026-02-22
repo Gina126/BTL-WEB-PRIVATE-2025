@@ -223,3 +223,8 @@ if (typeof module !== "undefined" && module.exports) {
     getRecommendedMovies,
   };
 }
+// Thêm vào cuối file js/api.js
+window.getNewMovies = getNewMovies;
+window.getSingleMovies = getSingleMovies;
+window.getSeriesMovies = getSeriesMovies;
+window.getMoviesByCategory = getMoviesByCategory;
