@@ -33,15 +33,6 @@ async function loadComponent(elementId, componentPath) {
 async function loadAllComponents() {
   console.log('🔄 Loading components...');
   await Promise.all([
-<<<<<<< Updated upstream
-    loadComponent("header-placeholder", "./components/header.html"),
-    loadComponent("footer-placeholder", "./components/footer.html"),
-  ]);
-
-  if (typeof initializeApp === "function") {
-    initializeApp();
-  }
-=======
     loadComponent('header-placeholder', './components/header.html'), // Use relative path ./
     loadComponent('footer-placeholder', './components/footer.html'),
   ]);
@@ -58,7 +49,6 @@ async function loadAllComponents() {
       console.error('❌ initializeApp is not defined!');
     }
   }, 100); // 100ms delay to ensure DOM is ready
->>>>>>> Stashed changes
 }
 
 if (document.readyState === "loading") {

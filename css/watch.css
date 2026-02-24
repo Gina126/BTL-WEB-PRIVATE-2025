@@ -1,17 +1,12 @@
-/* ===========================================
-   WATCH PAGE STYLES - REDESIGNED
-   Compact layout with tabs and circular avatars
-   =========================================== */
-
 /* Video Section */
 .video-section {
     background: #000;
-    margin: 150px auto 40px; /* Kept user's requested large margin */
-    max-width: 1500px; /* Widened slightly as requested */
+    margin: 150px auto 40px; /* Large margin as requested for top space */
+    max-width: 1500px;
     width: 95%; 
     border-radius: 12px;
-    overflow: hidden; /* For border radius */
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1); /* Raised effect */
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .video-container {
@@ -21,13 +16,97 @@
     background: #0a0a0a;
 }
 
-.video-container iframe {
+.video-container iframe,
+.video-container video {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     border: none;
+}
+
+/* Floating Quality Selector */
+.quality-selector {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 100;
+}
+
+.quality-btn {
+    background: rgba(15, 17, 26, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.quality-btn:hover {
+    background: rgba(15, 17, 26, 0.8);
+    border-color: #ffd875;
+}
+
+.quality-btn i {
+    font-size: 14px;
+    color: #ffd875;
+}
+
+.quality-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: rgba(15, 17, 26, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 8px;
+    min-width: 120px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.quality-menu.active {
+    display: flex;
+    animation: fadeInDown 0.2s ease-out;
+}
+
+.quality-item {
+    padding: 8px 12px;
+    color: #aaa;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.quality-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.quality-item.active {
+    background: rgba(255, 216, 117, 0.1);
+    color: #ffd875;
+    font-weight: 600;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Video Toolbar */
@@ -59,15 +138,15 @@
     color: #ffd875;
 }
 
-/* Content Wrapper */
+/* Content Wrapper - 2 Column Grid */
 .content-wrapper {
     display: grid;
-    grid-template-columns: 1fr 450px; /* Reduced left (was 1fr), Increased right (was 350px -> 450px) */
+    grid-template-columns: 1fr 450px;
     gap: 30px;
-    max-width: 1500px; /* Match Video Section */
-    width: 95%; /* Match Video Section */
+    max-width: 1500px;
+    width: 95%;
     margin: 0 auto;
-    padding: 0 0 40px; /* Removed side padding to align perfectly with video edges */
+    padding: 0 0 40px;
 }
 
 /* Compact Movie Info */
@@ -125,10 +204,12 @@
     font-weight: 500;
     height: 28px;
     padding: 0 10px;
+    background: transparent;
+    border: 1px solid #fff;
+    color: #fff;
 }
 
 .meta-tag.imdb {
-    background: transparent;
     border: 1px solid #ffd875;
     color: #ffd875;
     padding: 0 8px;
@@ -140,10 +221,25 @@
     font-weight: 700;
 }
 
-.meta-tag.box {
-    background: transparent;
-    border: 1px solid #fff;
+/* Sidebar Styles */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-widget {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 20px;
+}
+
+.widget-title {
+    font-size: 18px;
+    font-weight: 700;
     color: #fff;
+    margin-bottom: 20px;
 }
 
 .genres-inline {
@@ -276,31 +372,71 @@
     cursor: pointer;
     font-size: 16px;
     padding: 5px 0;
+    transition: color 0.2s ease;
 }
 
 .season-selector .dropdown-btn i.fa-caret-down {
-    font-size: 12px;
-    color: #888;
-    margin-left: 4px;
+    font-size: 11px;
+    color: #666;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dropdown-content {
+.season-selector.active .dropdown-btn i.fa-caret-down {
+    transform: rotate(180deg);
+    color: #ffd875;
+}
+
+.season-selector.active .dropdown-btn {
+    color: #ffd875;
+}
+
+.season-selector .dropdown-content {
     display: none;
     position: absolute;
     top: 100%;
     left: 0;
-    background-color: #1a1c26;
+    background: rgba(26, 28, 38, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     min-width: 250px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 100;
-    margin-top: 10px;
+    margin-top: 15px;
     overflow: hidden;
     padding-bottom: 5px;
+    animation: dropdownFadeIn 0.2s ease-out;
 }
 
-.dropdown-content.show {
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Arrow for dropdown */
+.season-selector .dropdown-content::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 20px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(255, 255, 255, 0.1);
+}
+
+.season-selector .dropdown-content::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 21px;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid rgba(26, 28, 38, 0.98);
+    margin-bottom: -1px;
+}
+
+.season-selector .dropdown-content.show {
     display: block;
     animation: fadeIn 0.15s ease-out;
 }

@@ -19,14 +19,12 @@
  * Khởi tạo ứng dụng
  */
 function initializeApp() {
-    console.log('📱 Initializing app...');
-    setupMobileMenu();
-    setupSearch();
-    setupCategoryDropdown();
-    setupCountryDropdown();
-    setupScrollEffects();
-    console.log('🔍 Rendering menu dropdowns...');
-    renderMenuDropdowns();
+  setupMobileMenu();
+  setupSearch();
+  setupCategoryDropdown();
+  setupCountryDropdown();
+  setupScrollEffects();
+  renderMenuDropdowns();
 }
 
 /**
@@ -112,6 +110,14 @@ function setupSearch() {
         }
       }
     });
+
+    // Đóng dropdown khi click ra ngoài
+    document.addEventListener("click", function (e) {
+      const searchBox = document.getElementById("search");
+      if (searchBox && !searchBox.contains(e.target)) {
+        hideSearchResults();
+      }
+    });
   }
 }
 
@@ -120,24 +126,81 @@ function setupSearch() {
  * @param {string} keyword - Từ khóa tìm kiếm
  */
 async function handleSearch(keyword) {
-  console.log("Searching for:", keyword);
-
-  // TODO: Tạo dropdown hiển thị kết quả tìm kiếm nhanh
-  // Hiện tại chỉ log ra, sẽ implement UI sau
+  if (!keyword || keyword.trim().length < 2) {
+    hideSearchResults();
+    return;
+  }
 
   const result = await searchMovies(keyword);
-  if (result.success) {
-    console.log("Search results:", result.data);
-    // showSearchResults(result.data);
+  if (result.success && result.data?.data?.items) {
+    showSearchResults(result.data.data.items, keyword);
+  } else {
+    hideSearchResults();
   }
+}
+
+/**
+ * Hiển thị kết quả tìm kiếm nhanh
+ * @param {Array} movies - Danh sách phim
+ * @param {string} keyword - Từ khóa
+ */
+function showSearchResults(movies, keyword) {
+  let searchBox = document.getElementById("search");
+  let resultsDropdown = document.getElementById("search-results-dropdown");
+
+  if (!resultsDropdown) {
+    resultsDropdown = document.createElement("div");
+    resultsDropdown.id = "search-results-dropdown";
+    resultsDropdown.className = "search-results-dropdown";
+    searchBox.appendChild(resultsDropdown);
+  }
+
+  resultsDropdown.classList.add("active");
+
+  if (movies.length === 0) {
+    resultsDropdown.innerHTML = `<div class="search-no-results">Không tìm thấy phim cho "${keyword}"</div>`;
+    return;
+  }
+
+  const IMAGE_HOST = "https://img.ophim.live/uploads/movies/";
+  const limitedMovies = movies.slice(0, 5); // Chỉ hiện 5 phim đầu tiên
+
+  let html = limitedMovies.map(movie => {
+    const thumb = movie.thumb_url.startsWith('http') 
+      ? movie.thumb_url 
+      : `${IMAGE_HOST}${movie.thumb_url}`;
+    
+    return `
+      <div class="search-result-item" onclick="location.href='detail.html?slug=${movie.slug}'">
+        <div class="search-result-thumb">
+          <img src="${thumb}" alt="${movie.name}" onerror="this.src='https://placehold.co/45x65/1a1c26/666?text=?'">
+        </div>
+        <div class="search-result-info">
+          <div class="search-result-title">${movie.name}</div>
+          <div class="search-result-meta">${movie.year || '2024'} • ${movie.episode_current || 'Full'}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // Nút xem tất cả
+  html += `
+    <div class="search-view-all">
+      <a href="search.html?q=${encodeURIComponent(keyword)}">Xem tất cả kết quả cho "${keyword}"</a>
+    </div>
+  `;
+
+  resultsDropdown.innerHTML = html;
 }
 
 /**
  * Ẩn kết quả tìm kiếm
  */
 function hideSearchResults() {
-  // TODO: Implement UI
-  console.log("Hide search results");
+  const resultsDropdown = document.getElementById("search-results-dropdown");
+  if (resultsDropdown) {
+    resultsDropdown.classList.remove("active");
+  }
 }
 
 /**
@@ -145,7 +208,7 @@ function hideSearchResults() {
  * @param {string} keyword - Từ khóa
  */
 function goToSearchPage(keyword) {
-  window.location.href = `/search.html?q=${encodeURIComponent(keyword)}`;
+  window.location.href = `search.html?q=${encodeURIComponent(keyword)}`;
 }
 
 /**
@@ -174,7 +237,6 @@ async function renderMenuDropdowns() {
  * Render dropdown thể loại vào menu (load từ API)
  */
 async function renderCategoriesDropdown() {
-<<<<<<< Updated upstream
   const categoryMenuItems = document.querySelectorAll(
     ".menu-item-sub .dropdown",
   );
@@ -211,7 +273,7 @@ async function renderCategoriesDropdown() {
         if (categories.length > 0) {
           let html = '<div class="dropdown-grid">';
           categories.forEach((category) => {
-            html += `<a href="/category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
+            html += `<a href="category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
           });
           html += "</div>";
 
@@ -221,7 +283,7 @@ async function renderCategoriesDropdown() {
           // Fallback: nếu parse thất bại, dùng data hardcode từ config.js
           let html = '<div class="dropdown-grid">';
           CATEGORIES.forEach((category) => {
-            html += `<a href="/category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
+            html += `<a href="category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
           });
           html += "</div>";
 
@@ -241,97 +303,12 @@ async function renderCategoriesDropdown() {
       }
     }
   });
-=======
-    console.log('🔍 renderCategoriesDropdown: Starting...');
-    
-    const categoryMenuItems = document.querySelectorAll('.menu-item-sub .dropdown');
-    console.log('🔍 Found menu items:', categoryMenuItems.length);
-    
-    if (categoryMenuItems.length === 0) {
-        console.error('❌ NO .menu-item-sub .dropdown elements found in DOM!');
-        console.log('   Checking if header exists:', !!document.getElementById('header'));
-        console.log('   Checking if main_menu exists:', !!document.getElementById('main_menu'));
-        return;
-    }
-    
-    // Sử dụng for...of thay vì forEach để await hoạt động đúng
-    for (const dropdown of categoryMenuItems) {
-        const linkText = dropdown.querySelector('a')?.textContent.trim();
-        console.log('🔍 Checking dropdown with text:', linkText);
-        
-        if (linkText && linkText.includes('Thể loại')) {
-            const dropdownContent = document.createElement('div');
-            dropdownContent.className = 'dropdown-content';
-            
-            // Load danh sách thể loại từ API
-            const result = await getCategoriesList();
-            console.log('Categories API result:', result);
-            
-            if (result.success && result.data) {
-                let categories = [];
-                
-                // Parse response structure từ OPHIM API
-                // Response format: { status: "success", data: { items: [...] } }
-                if (result.data.status === 'success' && result.data.data && result.data.data.items) {
-                    categories = result.data.data.items;
-                } else if (result.data.items) {
-                    // Fallback: nếu structure đơn giản hơn
-                    categories = result.data.items;
-                } else if (Array.isArray(result.data)) {
-                    // Fallback: nếu trả về array trực tiếp
-                    categories = result.data;
-                }
-                
-                console.log('Parsed categories:', categories.length);
-                
-                if (categories.length > 0) {
-                    let html = '<div class="dropdown-grid">';
-                    categories.forEach(category => {
-                        html += `<a href="/category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
-                    });
-                    html += '</div>';
-                    
-                    dropdownContent.innerHTML = html;
-                    dropdown.appendChild(dropdownContent);
-                    
-                    console.log('✅ Categories dropdown appended to:', dropdown);
-                    console.log('   Dropdown has children:', dropdown.children.length);
-                    console.log('   Dropdown HTML:', dropdown.innerHTML.substring(0, 200));
-                    console.log('   Parent element:', dropdown.parentElement);
-                } else {
-                    // Fallback: nếu parse thất bại, dùng data hardcode từ config.js
-                    console.warn('Using fallback CATEGORIES data');
-                    let html = '<div class="dropdown-grid">';
-                    CATEGORIES.forEach(category => {
-                        html += `<a href="/category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
-                    });
-                    html += '</div>';
-                    
-                    dropdownContent.innerHTML = html;
-                    dropdown.appendChild(dropdownContent);
-                }
-            } else {
-                // Fallback: nếu API lỗi, dùng data hardcode từ config.js
-                console.warn('API failed, using fallback CATEGORIES data');
-                let html = '<div class="dropdown-grid">';
-                CATEGORIES.forEach(category => {
-                    html += `<a href="/category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
-                });
-                html += '</div>';
-                
-                dropdownContent.innerHTML = html;
-                dropdown.appendChild(dropdownContent);
-            }
-        }
-    }
->>>>>>> Stashed changes
 }
 
 /**
  * Render dropdown quốc gia vào menu (load từ API)
  */
 async function renderCountriesDropdown() {
-<<<<<<< Updated upstream
   const countryMenuItems = document.querySelectorAll(
     ".menu-item-sub .dropdown",
   );
@@ -366,7 +343,7 @@ async function renderCountriesDropdown() {
         if (countries.length > 0) {
           let html = '<div class="dropdown-grid">';
           countries.forEach((country) => {
-            html += `<a href="/country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
+            html += `<a href="country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
           });
           html += "</div>";
 
@@ -387,7 +364,7 @@ async function renderCountriesDropdown() {
         // Fallback: nếu API lỗi, dùng data hardcode từ config.js
         let html = '<div class="dropdown-grid">';
         COUNTRIES.forEach((country) => {
-          html += `<a href="/country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
+          html += `<a href="country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
         });
         html += "</div>";
 
@@ -398,107 +375,13 @@ async function renderCountriesDropdown() {
   });
 }
 
-/**
- * Render dropdown quốc gia vào menu
- */
-function renderCountriesDropdown() {
-  const countryMenuItems = document.querySelectorAll(
-    ".menu-item-sub .dropdown",
-  );
-
-  countryMenuItems.forEach((dropdown) => {
-    const linkText = dropdown.querySelector("a")?.textContent.trim();
-
-    if (linkText && linkText.includes("Quốc gia")) {
-      const dropdownContent = document.createElement("div");
-      dropdownContent.className = "dropdown-content";
-
-      let html = '<div class="dropdown-grid">';
-      COUNTRIES.forEach((country) => {
-        html += `<a href="/country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
-      });
-      html += "</div>";
-
-      dropdownContent.innerHTML = html;
-      dropdown.appendChild(dropdownContent);
-    }
-  });
-}
-=======
-    const countryMenuItems = document.querySelectorAll('.menu-item-sub .dropdown');
-    
-    // Sử dụng for...of thay vì forEach để await hoạt động đúng
-    for (const dropdown of countryMenuItems) {
-        const linkText = dropdown.querySelector('a')?.textContent.trim();
-        
-        if (linkText && linkText.includes('Quốc gia')) {
-            const dropdownContent = document.createElement('div');
-            dropdownContent.className = 'dropdown-content';
-            
-            // Load danh sách quốc gia từ API
-            const result = await getCountriesList();
-            console.log('Countries API result:', result);
-            
-            if (result.success && result.data) {
-                let countries = [];
-                
-                // Parse response structure từ OPHIM API
-                // Response format: { status: "success", data: { items: [...] } }
-                if (result.data.status === 'success' && result.data.data && result.data.data.items) {
-                    countries = result.data.data.items;
-                } else if (result.data.items) {
-                    countries = result.data.items;
-                } else if (Array.isArray(result.data)) {
-                    countries = result.data;
-                }
-                
-                console.log('Parsed countries:', countries.length);
-                
-                if (countries.length > 0) {
-                    let html = '<div class="dropdown-grid">';
-                    countries.forEach(country => {
-                        html += `<a href="/country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
-                    });
-                    html += '</div>';
-                    
-                    dropdownContent.innerHTML = html;
-                    dropdown.appendChild(dropdownContent);
-                } else {
-                    // Fallback: nếu parse thất bại, dùng data hardcode từ config.js
-                    console.warn('Using fallback COUNTRIES data');
-                    let html = '<div class="dropdown-grid">';
-                    COUNTRIES.forEach(country => {
-                        html += `<a href="/country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
-                    });
-                    html += '</div>';
-                    
-                    dropdownContent.innerHTML = html;
-                    dropdown.appendChild(dropdownContent);
-                }
-            } else {
-                // Fallback: nếu API lỗi, dùng data hardcode từ config.js
-                console.warn('API failed, using fallback COUNTRIES data');
-                let html = '<div class="dropdown-grid">';
-                COUNTRIES.forEach(country => {
-                    html += `<a href="/country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
-                });
-                html += '</div>';
-                
-                dropdownContent.innerHTML = html;
-                dropdown.appendChild(dropdownContent);
-            }
-        }
-    }
-}
-
-
->>>>>>> Stashed changes
 
 /**
  * Setup scroll effects (header sticky, scroll to top button, etc.)
  */
 function setupScrollEffects() {
   const header = document.getElementById("header");
+  const scrollToTopBtn = document.getElementById("scroll-to-top");
   let lastScroll = 0;
 
   // Throttle scroll event để tối ưu performance
@@ -512,15 +395,27 @@ function setupScrollEffects() {
       header?.classList.remove("sticky");
     }
 
-    // Hide header khi scroll xuống, show khi scroll lên (optional)
-    // if (currentScroll > lastScroll && currentScroll > 500) {
-    //     header?.classList.add('hidden');
-    // } else {
-    //     header?.classList.remove('hidden');
-    // }
+    // Xử lý nút cuộn lên đầu trang
+    if (scrollToTopBtn) {
+      if (currentScroll > 300) {
+        scrollToTopBtn.classList.add("visible");
+      } else {
+        scrollToTopBtn.classList.remove("visible");
+      }
+    }
 
     lastScroll = currentScroll;
   }, 100);
+
+  // Sự kiện click cho nút cuộn lên đầu
+  if (scrollToTopBtn) {
+    scrollToTopBtn.addEventListener("click", function () {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
+  }
 
   window.addEventListener("scroll", handleScroll);
 }
@@ -596,26 +491,3 @@ if (typeof module !== "undefined" && module.exports) {
     toggleFavorite,
   };
 }
-
-// Scroll to Top Button (Global)
-document.addEventListener('DOMContentLoaded', () => {
-  const scrollTopBtn = document.getElementById('scroll-to-top');
-  if (scrollTopBtn) {
-    // Show/hide button based on scroll position
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) {
-        scrollTopBtn.classList.add('visible');
-      } else {
-        scrollTopBtn.classList.remove('visible');
-      }
-    });
-
-    // Scroll to top on click
-    scrollTopBtn.addEventListener('click', () => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    });
-  }
-});

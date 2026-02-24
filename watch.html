@@ -15,13 +15,13 @@
     <link rel="stylesheet" href="./css/variables.css">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/components.css">
-    <link rel="stylesheet" href="./css/watch.css">
+    <link rel="stylesheet" href="./css/watch.css?v=2">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-    <!-- Header Component -->\r
+    <!-- Header Component -->
     <div id="header-placeholder"></div>
 
-    <!-- Main Content -->
     <!-- Main Content -->
     <main class="watch-page">
         <!-- Watch Header (Back + Title) -->
@@ -38,7 +38,19 @@
         <!-- Video Section -->
         <section class="video-section">
             <div class="video-container">
-                <iframe id="video-iframe" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                <iframe id="video-iframe" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="display: none;"></iframe>
+                <video id="hls-player" controls preload="auto" style="display: none; width: 100%; height: 100%; background: #000;"></video>
+                
+                <!-- Floating Quality Selector -->
+                <div id="quality-selector" class="quality-selector" style="display: none;">
+                    <button class="quality-btn" id="quality-current-btn">
+                        <i class="fas fa-gear"></i>
+                        <span id="current-quality-label">Auto</span>
+                    </button>
+                    <div class="quality-menu" id="quality-menu">
+                        <!-- Levels will be injected here -->
+                    </div>
+                </div>
             </div>
             
             <!-- Video Toolbar -->
@@ -211,6 +223,6 @@
     <script src="./js/api.js?v=3"></script>
     <script src="./js/main.js?v=3"></script>
     <script src="./js/components.js?v=3"></script>
-   /* <script src="./js/watch.js?v=3" defer></script> */
+    <script src="./js/watch.js?v=3" defer></script>
 </body>
 </html>

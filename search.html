@@ -13,9 +13,12 @@
     <link rel="stylesheet" href="./css/components.css" />
     <link rel="stylesheet" href="./css/homepage.css">
 
-    <script src="./js/components.js"></script>
-    <script src="./js/config.js"></script>
-    <script src="./js/main.js"></script>
+    <script src="./js/config.js?v=3"></script>
+    <script src="./js/utils.js?v=3"></script>
+    <script src="./js/api.js?v=3"></script>
+    <script src="./js/main.js?v=3"></script>
+    <script src="./js/components.js?v=3"></script>
+    <script src="./js/search.js?v=3" defer></script>
 </head>
 <body>
     <div id="header-placeholder"></div>
@@ -31,74 +34,5 @@
 
     <div id="footer-placeholder"></div>
 
-    <script>
-        const IMAGE_HOST = "https://img.ophim.live/uploads/movies/";
-
-        async function loadSearchResult() {
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            /** * SỬA LỖI TẠI ĐÂY: 
-             * main.js gửi đi là '?q=', nên ở đây phải lấy '.get('q')'
-             */
-            const keyword = urlParams.get('q'); 
-            
-            const grid = document.getElementById('searchResultGrid');
-            const titleElement = document.getElementById('searchTitle');
-            
-            if (!keyword) {
-                titleElement.innerText = "Vui lòng nhập từ khóa để tìm kiếm";
-                grid.innerHTML = "";
-                return;
-            }
-
-            titleElement.innerText = `KẾT QUẢ TÌM KIẾM: "${keyword.toUpperCase()}"`;
-            grid.innerHTML = '<p style="grid-column: 1/-1; padding: 20px;">🔍 Đang tìm phim, đợi xíu nhé...</p>';
-
-            try {
-                // Gọi API tìm kiếm
-                const response = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}&limit=24`);
-                const result = await response.json();
-                
-                // Trích xuất mảng phim từ data.items
-                const movies = result.data?.items || [];
-
-                if (movies.length === 0) {
-                    grid.innerHTML = `<p style="grid-column: 1/-1; padding: 20px; color: #ff4444;">
-                        ❌ Không tìm thấy phim nào khớp với từ khóa "${keyword}".
-                    </p>`;
-                    return;
-                }
-
-                grid.innerHTML = movies.map(movie => {
-                    const badge = movie.episode_current || movie.quality || "HD";
-                    
-                    // Xử lý link ảnh poster
-                    const thumb = movie.thumb_url.startsWith('http') 
-                        ? movie.thumb_url 
-                        : `${IMAGE_HOST}${movie.thumb_url}`;
-
-                    return `
-                        <div class="movie-card">
-                            <div class="badge">${badge}</div>
-                            <div class="movie-poster">
-                                <img src="${thumb}" alt="${movie.name}" 
-                                     onerror="this.src='https://via.placeholder.com/200x300?text=Lỗi+Ảnh'">
-                            </div>
-                            <div class="movie-info">
-                                <h3 title="${movie.name}">${movie.name}</h3>
-                                <p>${movie.year || '2024'}</p>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-            } catch (error) {
-                console.error("Lỗi tìm kiếm:", error);
-                grid.innerHTML = `<p style="grid-column: 1/-1; padding: 20px;">⚠️ Lỗi kết nối API. Vui lòng thử lại.</p>`;
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', loadSearchResult);
-    </script>
 </body>
 </html>

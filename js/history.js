@@ -1,5 +1,5 @@
 // ================== CONFIG ==================
-const HISTORY_KEY = "watch_history";
+const HISTORY_KEY = "rophim_watch_history";
 const ITEMS_PER_PAGE = 12;
 
 // ================== STATE ==================
@@ -82,7 +82,11 @@ function renderHistory(page) {
 
 // ================== CREATE CARD ==================
 function createMovieCard(movie) {
-  const poster = movie.poster || "https://placehold.co/300x450?text=No+Image";
+  const cdnUrl = "https://img.ophim.live/uploads/movies/";
+  const rawPoster = movie.poster_url || movie.thumb_url || movie.poster || "";
+  const poster = rawPoster
+    ? (rawPoster.startsWith("http") ? rawPoster : cdnUrl + rawPoster)
+    : "https://placehold.co/300x450?text=No+Image";
 
   const progressText =
     movie.progress && movie.progress > 0
@@ -127,7 +131,7 @@ function createMovieCard(movie) {
 
   // Click xem lại
   card.querySelector(".movie-poster").addEventListener("click", () => {
-    window.location.href = `/detail.html?slug=${movie.slug}`;
+    window.location.href = `watch.html?slug=${movie.slug}&ep=${movie.episode || "1"}`;
   });
 
   // Xoá khỏi lịch sử
@@ -222,5 +226,4 @@ function addTestHistory() {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(testData));
 }
 
-// GỌI TEST Ở ĐÂY
-addTestHistory();
+// addTestHistory(); // ← Bỏ comment này để test, nhớ xóa sau

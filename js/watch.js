@@ -41,15 +41,12 @@ async function loadMovie(slug) {
         renderMovie();
         renderVideo();
         renderEpisodes();
-        renderEpisodes();
         
         // Load additional data async
-        renderCastEnhanced(); // New enhanced cast
-        loadGallery();        // New gallery
-        renderCastEnhanced(); // New enhanced cast
-        loadGallery();        // New gallery
-        loadRecommendations(); // Existing recommendations
-        renderRichComments(); // New rich comments
+        renderCastEnhanced(); 
+        loadGallery();        
+        loadRecommendations(); 
+        renderRichComments(); 
         
         // Save to history
         saveWatchHistory(currentMovie, currentEp, 0);
@@ -302,8 +299,75 @@ function renderVideo() {
     if (!ep) return;
 
     const iframe = document.getElementById("video-iframe");
-    if (iframe) {
-        iframe.src = ep.link_embed || ep.link_m3u8;
+    const video = document.getElementById("hls-player");
+    
+    const m3u8Url = ep.link_m3u8;
+    const embedUrl = ep.link_embed;
+
+    if (m3u8Url && m3u8Url.includes('.m3u8')) {
+        // Use Hls.js if supported
+        if (iframe) iframe.style.display = "none";
+        const qualitySelector = document.getElementById("quality-selector");
+        
+        if (video) {
+            video.style.display = "block";
+            if (Hls.isSupported()) {
+                const hls = new Hls({
+                    capLevelToPlayerSize: false, // Ensure full quality is available
+                    startLevel: -1 // Auto
+                });
+                hls.loadSource(m3u8Url);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play().catch(e => console.log("Autoplay blocked"));
+                    
+                    // Setup Quality Selector
+                    if (qualitySelector) {
+                        qualitySelector.style.display = "block";
+                        setupQualitySelector(hls);
+                    }
+                });
+
+                // Listen for level switch to update label
+                hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
+                    const label = document.getElementById("current-quality-label");
+                    if (label && hls.autoLevelEnabled) {
+                        const height = hls.levels[data.level].height;
+                        label.textContent = `Auto (${height}p)`;
+                    }
+                });
+
+                // Auto-next on video end
+                video.onended = () => {
+                    console.log("Video ended, triggering auto-next...");
+                    playNextEpisode();
+                };
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // For Safari (HLS native support doesn't provide level info easily)
+                video.src = m3u8Url;
+                if (qualitySelector) qualitySelector.style.display = "none";
+                video.addEventListener('loadedmetadata', function() {
+                    video.play().catch(e => console.log("Autoplay blocked"));
+                });
+                
+                // Auto-next for Safari
+                video.onended = () => playNextEpisode();
+            }
+        }
+    } else {
+        // Fallback to Iframe
+        const qualitySelector = document.getElementById("quality-selector");
+        if (qualitySelector) qualitySelector.style.display = "none";
+
+        if (video) {
+            video.pause();
+            video.style.display = "none";
+        }
+        if (iframe) {
+            iframe.style.display = "block";
+            iframe.src = embedUrl || "";
+        }
     }
 
     // Update URL
@@ -311,45 +375,68 @@ function renderVideo() {
     window.history.pushState({}, "", url);
 }
 
-// Initialize Episodes Controls
-function initEpisodeControls(episodes) {
-    const serverTabs = document.getElementById("server-tabs");
-    const seasonList = document.getElementById("season-list");
-    const currentSeasonText = document.getElementById("current-season-text");
+/**
+ * Setup Quality Selector UI and Logic
+ */
+function setupQualitySelector(hls) {
+    const selectorContainer = document.getElementById("quality-selector");
+    const currentBtn = document.getElementById("quality-current-btn");
+    const menu = document.getElementById("quality-menu");
+    const label = document.getElementById("current-quality-label");
 
-    if (!serverTabs) return;
+    if (!currentBtn || !menu || !selectorContainer) return;
 
-    // Render Server Tabs
-    serverTabs.innerHTML = episodes.map((server, idx) => `
-        <button class="server-btn ${idx === selectedServerIdx ? 'active' : ''}" 
-                onclick="switchServerTab(${idx})">
-            ${server.server_name}
-        </button>
-    `).join("");
-
-    // Render Season List
-    if (seasonList && currentSeasonText) {
-        // Detect current season
-        const seasonMatch = currentMovie.name.match(/Phần (\d+)/i);
-        const currentSeasonNum = seasonMatch ? parseInt(seasonMatch[1]) : 1;
-        const currentSeasonName = `Phần ${currentSeasonNum}`;
-        
-        currentSeasonText.textContent = currentSeasonName;
-        
-        // Initial state: just show current
-        seasonList.innerHTML = `<a href="#" class="season-item active">${currentSeasonName}</a>`;
-
-        // Load other seasons async
-        loadSeasons(currentMovie.name, currentSeasonNum);
+    // Populate levels
+    const levels = hls.levels;
+    
+    // If only one level, hide the whole selector but keep HLS optimizations active
+    if (levels.length <= 1) {
+        selectorContainer.style.display = "none";
+        return;
     }
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        const dropdown = document.querySelector('.season-selector');
-        const content = document.getElementById("season-dropdown-content");
-        if (dropdown && content && !dropdown.contains(e.target)) {
-            content.classList.remove('show');
-        }
+    selectorContainer.style.display = "block";
+
+    // Toggle menu
+    currentBtn.onclick = (e) => {
+        e.stopPropagation();
+        menu.classList.toggle("active");
+    };
+
+    // Close menu on click outside
+    document.addEventListener("click", () => menu.classList.remove("active"));
+
+    let html = `<div class="quality-item ${hls.autoLevelEnabled ? 'active' : ''}" data-level="-1">Tự động (Auto)</div>`;
+    
+    // Sort levels high to low
+    const sortedLevels = [...levels].map((level, index) => ({ ...level, index })).sort((a, b) => b.height - a.height);
+
+    html += sortedLevels.map(level => {
+        return `<div class="quality-item ${!hls.autoLevelEnabled && hls.currentLevel === level.index ? 'active' : ''}" data-level="${level.index}">
+            ${level.height}p ${level.height >= 1080 ? ' <small style="color:#ffd875">FHD</small>' : ''}
+        </div>`;
+    }).join("");
+
+    menu.innerHTML = html;
+
+    // Item click handler
+    menu.querySelectorAll(".quality-item").forEach(item => {
+        item.onclick = function() {
+            const level = parseInt(this.getAttribute("data-level"));
+            hls.currentLevel = level;
+            
+            // Update UI
+            menu.querySelectorAll(".quality-item").forEach(i => i.classList.remove("active"));
+            this.classList.add("active");
+            
+            if (level === -1) {
+                label.textContent = "Auto";
+            } else {
+                label.textContent = `${levels[level].height}p`;
+            }
+            
+            menu.classList.remove("active");
+        };
     });
 }
 
@@ -410,10 +497,62 @@ async function loadSeasons(movieName, currentSeasonNum) {
     }
 }
 
-// Toggle Season Dropdown
 function toggleSeasonDropdown() {
+    const dropdown = document.querySelector('.season-selector');
     const content = document.getElementById("season-dropdown-content");
-    if (content) content.classList.toggle("show");
+    if (dropdown && content) {
+        const isShowing = content.classList.contains("show");
+        if (isShowing) {
+            content.classList.remove("show");
+            dropdown.classList.remove("active");
+        } else {
+            content.classList.add("show");
+            dropdown.classList.add("active");
+        }
+    }
+}
+
+// Update initEpisodeControls to handle outside click removal of active class
+function initEpisodeControls(episodes) {
+    const serverTabs = document.getElementById("server-tabs");
+    const seasonList = document.getElementById("season-list");
+    const currentSeasonText = document.getElementById("current-season-text");
+
+    if (!serverTabs) return;
+
+    // Render Server Tabs
+    serverTabs.innerHTML = episodes.map((server, idx) => `
+        <button class="server-btn ${idx === selectedServerIdx ? 'active' : ''}" 
+                onclick="switchServerTab(${idx})">
+            ${server.server_name}
+        </button>
+    `).join("");
+
+    // Render Season List
+    if (seasonList && currentSeasonText) {
+        // Detect current season
+        const seasonMatch = currentMovie.name.match(/Phần (\d+)/i);
+        const currentSeasonNum = seasonMatch ? parseInt(seasonMatch[1]) : 1;
+        const currentSeasonName = `Phần ${currentSeasonNum}`;
+        
+        currentSeasonText.textContent = currentSeasonName;
+        
+        // Initial state: just show current
+        seasonList.innerHTML = `<a href="#" class="season-item active">${currentSeasonName}</a>`;
+
+        // Load other seasons async
+        loadSeasons(currentMovie.name, currentSeasonNum);
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.querySelector('.season-selector');
+        const content = document.getElementById("season-dropdown-content");
+        if (dropdown && content && !dropdown.contains(e.target)) {
+            content.classList.remove('show');
+            dropdown.classList.remove('active');
+        }
+    });
 }
 
 function selectSeason(seasonName) {
@@ -488,6 +627,28 @@ function playEpisode(epName, serverIdx) {
     
     saveWatchHistory(currentMovie, epName, 0);
     window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/**
+ * Handle Auto-next Episode
+ */
+function playNextEpisode() {
+    if (!currentMovie) return;
+    
+    const episodes = currentMovie.episodes;
+    const currentServerData = episodes[currentServer];
+    if (!currentServerData) return;
+
+    const serverData = currentServerData.server_data;
+    const currentIndex = serverData.findIndex(e => e.name === currentEp);
+    
+    if (currentIndex !== -1 && currentIndex < serverData.length - 1) {
+        const nextEp = serverData[currentIndex + 1];
+        console.log("Auto-next: Playing episode", nextEp.name);
+        playEpisode(nextEp.name, currentServer);
+    } else {
+        console.log("Reached last episode of the current server.");
+    }
 }
 
 // Load recommendations async
