@@ -19,12 +19,14 @@
  * Khởi tạo ứng dụng
  */
 function initializeApp() {
-  setupMobileMenu();
-  setupSearch();
-  setupCategoryDropdown();
-  setupCountryDropdown();
-  setupScrollEffects();
-  renderMenuDropdowns();
+    console.log('📱 Initializing app...');
+    setupMobileMenu();
+    setupSearch();
+    setupCategoryDropdown();
+    setupCountryDropdown();
+    setupScrollEffects();
+    console.log('🔍 Rendering menu dropdowns...');
+    renderMenuDropdowns();
 }
 
 /**
@@ -172,6 +174,7 @@ async function renderMenuDropdowns() {
  * Render dropdown thể loại vào menu (load từ API)
  */
 async function renderCategoriesDropdown() {
+<<<<<<< Updated upstream
   const categoryMenuItems = document.querySelectorAll(
     ".menu-item-sub .dropdown",
   );
@@ -238,12 +241,97 @@ async function renderCategoriesDropdown() {
       }
     }
   });
+=======
+    console.log('🔍 renderCategoriesDropdown: Starting...');
+    
+    const categoryMenuItems = document.querySelectorAll('.menu-item-sub .dropdown');
+    console.log('🔍 Found menu items:', categoryMenuItems.length);
+    
+    if (categoryMenuItems.length === 0) {
+        console.error('❌ NO .menu-item-sub .dropdown elements found in DOM!');
+        console.log('   Checking if header exists:', !!document.getElementById('header'));
+        console.log('   Checking if main_menu exists:', !!document.getElementById('main_menu'));
+        return;
+    }
+    
+    // Sử dụng for...of thay vì forEach để await hoạt động đúng
+    for (const dropdown of categoryMenuItems) {
+        const linkText = dropdown.querySelector('a')?.textContent.trim();
+        console.log('🔍 Checking dropdown with text:', linkText);
+        
+        if (linkText && linkText.includes('Thể loại')) {
+            const dropdownContent = document.createElement('div');
+            dropdownContent.className = 'dropdown-content';
+            
+            // Load danh sách thể loại từ API
+            const result = await getCategoriesList();
+            console.log('Categories API result:', result);
+            
+            if (result.success && result.data) {
+                let categories = [];
+                
+                // Parse response structure từ OPHIM API
+                // Response format: { status: "success", data: { items: [...] } }
+                if (result.data.status === 'success' && result.data.data && result.data.data.items) {
+                    categories = result.data.data.items;
+                } else if (result.data.items) {
+                    // Fallback: nếu structure đơn giản hơn
+                    categories = result.data.items;
+                } else if (Array.isArray(result.data)) {
+                    // Fallback: nếu trả về array trực tiếp
+                    categories = result.data;
+                }
+                
+                console.log('Parsed categories:', categories.length);
+                
+                if (categories.length > 0) {
+                    let html = '<div class="dropdown-grid">';
+                    categories.forEach(category => {
+                        html += `<a href="/category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
+                    });
+                    html += '</div>';
+                    
+                    dropdownContent.innerHTML = html;
+                    dropdown.appendChild(dropdownContent);
+                    
+                    console.log('✅ Categories dropdown appended to:', dropdown);
+                    console.log('   Dropdown has children:', dropdown.children.length);
+                    console.log('   Dropdown HTML:', dropdown.innerHTML.substring(0, 200));
+                    console.log('   Parent element:', dropdown.parentElement);
+                } else {
+                    // Fallback: nếu parse thất bại, dùng data hardcode từ config.js
+                    console.warn('Using fallback CATEGORIES data');
+                    let html = '<div class="dropdown-grid">';
+                    CATEGORIES.forEach(category => {
+                        html += `<a href="/category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
+                    });
+                    html += '</div>';
+                    
+                    dropdownContent.innerHTML = html;
+                    dropdown.appendChild(dropdownContent);
+                }
+            } else {
+                // Fallback: nếu API lỗi, dùng data hardcode từ config.js
+                console.warn('API failed, using fallback CATEGORIES data');
+                let html = '<div class="dropdown-grid">';
+                CATEGORIES.forEach(category => {
+                    html += `<a href="/category.html?slug=${category.slug}" class="dropdown-item">${category.name}</a>`;
+                });
+                html += '</div>';
+                
+                dropdownContent.innerHTML = html;
+                dropdown.appendChild(dropdownContent);
+            }
+        }
+    }
+>>>>>>> Stashed changes
 }
 
 /**
  * Render dropdown quốc gia vào menu (load từ API)
  */
 async function renderCountriesDropdown() {
+<<<<<<< Updated upstream
   const countryMenuItems = document.querySelectorAll(
     ".menu-item-sub .dropdown",
   );
@@ -336,6 +424,75 @@ function renderCountriesDropdown() {
     }
   });
 }
+=======
+    const countryMenuItems = document.querySelectorAll('.menu-item-sub .dropdown');
+    
+    // Sử dụng for...of thay vì forEach để await hoạt động đúng
+    for (const dropdown of countryMenuItems) {
+        const linkText = dropdown.querySelector('a')?.textContent.trim();
+        
+        if (linkText && linkText.includes('Quốc gia')) {
+            const dropdownContent = document.createElement('div');
+            dropdownContent.className = 'dropdown-content';
+            
+            // Load danh sách quốc gia từ API
+            const result = await getCountriesList();
+            console.log('Countries API result:', result);
+            
+            if (result.success && result.data) {
+                let countries = [];
+                
+                // Parse response structure từ OPHIM API
+                // Response format: { status: "success", data: { items: [...] } }
+                if (result.data.status === 'success' && result.data.data && result.data.data.items) {
+                    countries = result.data.data.items;
+                } else if (result.data.items) {
+                    countries = result.data.items;
+                } else if (Array.isArray(result.data)) {
+                    countries = result.data;
+                }
+                
+                console.log('Parsed countries:', countries.length);
+                
+                if (countries.length > 0) {
+                    let html = '<div class="dropdown-grid">';
+                    countries.forEach(country => {
+                        html += `<a href="/country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
+                    });
+                    html += '</div>';
+                    
+                    dropdownContent.innerHTML = html;
+                    dropdown.appendChild(dropdownContent);
+                } else {
+                    // Fallback: nếu parse thất bại, dùng data hardcode từ config.js
+                    console.warn('Using fallback COUNTRIES data');
+                    let html = '<div class="dropdown-grid">';
+                    COUNTRIES.forEach(country => {
+                        html += `<a href="/country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
+                    });
+                    html += '</div>';
+                    
+                    dropdownContent.innerHTML = html;
+                    dropdown.appendChild(dropdownContent);
+                }
+            } else {
+                // Fallback: nếu API lỗi, dùng data hardcode từ config.js
+                console.warn('API failed, using fallback COUNTRIES data');
+                let html = '<div class="dropdown-grid">';
+                COUNTRIES.forEach(country => {
+                    html += `<a href="/country.html?slug=${country.slug}" class="dropdown-item">${country.name}</a>`;
+                });
+                html += '</div>';
+                
+                dropdownContent.innerHTML = html;
+                dropdown.appendChild(dropdownContent);
+            }
+        }
+    }
+}
+
+
+>>>>>>> Stashed changes
 
 /**
  * Setup scroll effects (header sticky, scroll to top button, etc.)
@@ -439,3 +596,26 @@ if (typeof module !== "undefined" && module.exports) {
     toggleFavorite,
   };
 }
+
+// Scroll to Top Button (Global)
+document.addEventListener('DOMContentLoaded', () => {
+  const scrollTopBtn = document.getElementById('scroll-to-top');
+  if (scrollTopBtn) {
+    // Show/hide button based on scroll position
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        scrollTopBtn.classList.add('visible');
+      } else {
+        scrollTopBtn.classList.remove('visible');
+      }
+    });
+
+    // Scroll to top on click
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  }
+});
