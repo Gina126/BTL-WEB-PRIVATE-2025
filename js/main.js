@@ -410,23 +410,30 @@ function setupScrollEffects() {
  * @param {string} type - Loại (success, error, info)
  */
 function showToast(message, type = "info") {
+  // Đảm bảo có toast-container
+  let container = document.querySelector(".toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
   // Tạo toast element
   const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
   toast.innerHTML = `
-        <i class="fa-solid ${getToastIcon(type)}"></i>
-        <span>${message}</span>
+        <div class="toast-icon">
+            <i class="fa-solid ${getToastIcon(type)}"></i>
+        </div>
+        <div class="toast-message">${message}</div>
     `;
 
-  // Thêm vào body
-  document.body.appendChild(toast);
-
-  // Hiển thị toast
-  setTimeout(() => toast.classList.add("show"), 100);
+  // Thêm vào container
+  container.appendChild(toast);
 
   // Tự động ẩn sau 3s
   setTimeout(() => {
-    toast.classList.remove("show");
+    toast.classList.add("toast-removing");
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }

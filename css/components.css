@@ -371,16 +371,13 @@
 }
 
 @keyframes slide-in {
-    to {
-        transform: translateX(0);
-    }
+    from { transform: translateX(400px); }
+    to { transform: translateX(0); }
 }
 
 @keyframes slide-out {
-    to {
-        transform: translateX(400px);
-        opacity: 0;
-    }
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(400px); opacity: 0; }
 }
 
 .toast-icon {
@@ -393,17 +390,9 @@
     font-size: 16px;
 }
 
-.toast.toast-success .toast-icon {
-    color: #22c55e;
-}
-
-.toast.toast-error .toast-icon {
-    color: #ef4444;
-}
-
-.toast.toast-info .toast-icon {
-    color: #3b82f6;
-}
+.toast.toast-success i { color: #22c55e; }
+.toast.toast-error i { color: #ef4444; }
+.toast.toast-info i { color: #3b82f6; }
 
 .toast-message {
     flex: 1;
@@ -412,17 +401,9 @@
     line-height: 1.5;
 }
 
-.toast-success {
-    border-left: 4px solid #2ecc71;
-}
-
-.toast-info {
-    border-left: 4px solid #FFD875;
-}
-
-.toast-error {
-    border-left: 4px solid #ef4444;
-}
+.toast-success { border-left: 4px solid #2ecc71; }
+.toast-info { border-left: 4px solid #FFD875; }
+.toast-error { border-left: 4px solid #ef4444; }
 
 /* ==========================================================================
    BUTTONS
