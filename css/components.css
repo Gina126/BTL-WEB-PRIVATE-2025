@@ -4,30 +4,23 @@
  */
 
 /* ==========================================================================
-   MOVIE CARDS
+   MOVIE GRID & CARD SYSTEM (Global)
    ========================================================================== */
 
-/* Movies Grid Container */
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+    min-height: 300px;
+    margin-bottom: 30px;
+}
+
+/* Movies Grid (Legacy compatibility) */
 .movies-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 16px;
     padding: 20px 0;
-}
-
-/* Responsive grid columns */
-@media (min-width: 768px) {
-    .movies-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 20px;
-    }
-}
-
-@media (min-width: 1200px) {
-    .movies-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 24px;
-    }
 }
 
 /* Movie Card Component */
@@ -189,43 +182,69 @@
 /* Favorite Button */
 .btn-favorite {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 36px;
-    height: 36px;
+    top: 10px;
+    right: 10px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: #FFD875;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 3;
-    transition: all 0.3s ease;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .btn-favorite i {
-    font-size: 16px;
-    color: #fff;
+    font-size: 18px;
+    color: #000;
+    transition: transform 0.2s ease;
 }
 
 .btn-favorite:hover {
-    background-color: rgba(255, 216, 117, 0.9);
-    border-color: rgba(255, 216, 117, 0.9);
-    transform: scale(1.1);
+    transform: scale(1.15);
+    background-color: #ffc942;
+    box-shadow: 0 6px 16px rgba(255, 216, 117, 0.4);
 }
 
-.btn-favorite:hover i {
-    color: #000;
-}
-
-.btn-favorite.active {
-    background-color: rgba(239, 68, 68, 0.9);
-    border-color: rgba(239, 68, 68, 0.9);
+.btn-favorite:active {
+    transform: scale(0.95);
 }
 
 .btn-favorite.active i {
-    color: #fff;
+    color: #ef4444; /* Trái tim đỏ khi đã yêu thích */
+}
+
+/* Responsive grid columns */
+@media (min-width: 768px) {
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 24px;
+    }
+}
+
+/* RESPONSIVE GRID (6 columns) */
+@media (max-width: 1200px) { 
+    .movie-grid { grid-template-columns: repeat(5, 1fr); } 
+}
+@media (max-width: 1024px) { 
+    .movie-grid { grid-template-columns: repeat(4, 1fr); } 
+}
+@media (max-width: 768px) { 
+    .movie-grid { grid-template-columns: repeat(3, 1fr); } 
+}
+@media (max-width: 480px) { 
+    .movie-grid { grid-template-columns: repeat(2, 1fr); } 
 }
 
 /* ==========================================================================
@@ -269,19 +288,20 @@
     border-radius: 10px;
 }
 
-.skeleton-card .skeleton-poster {
+.skeleton-poster {
+    width: 100%;
     padding-top: 150%;
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-.skeleton-card .skeleton-title {
+.skeleton-title {
     height: 16px;
     margin: 12px;
     background-color: rgba(255, 255, 255, 0.08);
     border-radius: 4px;
 }
 
-.skeleton-card .skeleton-meta {
+.skeleton-meta {
     height: 12px;
     margin: 0 12px 12px;
     width: 60%;
@@ -296,6 +316,22 @@
     100% {
         background-position: -200% 0;
     }
+}
+
+@keyframes skeleton-pulse {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-loading {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.03) 25%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.03) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s infinite;
 }
 
 /* ==========================================================================
@@ -319,7 +355,7 @@
     padding: 16px 20px;
     background-color: rgba(15, 17, 26, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
@@ -327,6 +363,7 @@
     pointer-events: auto;
     transform: translateX(400px);
     animation: slide-in 0.3s ease forwards;
+    backdrop-filter: blur(10px);
 }
 
 .toast.toast-removing {
@@ -373,6 +410,18 @@
     font-size: 14px;
     color: #fff;
     line-height: 1.5;
+}
+
+.toast-success {
+    border-left: 4px solid #2ecc71;
+}
+
+.toast-info {
+    border-left: 4px solid #FFD875;
+}
+
+.toast-error {
+    border-left: 4px solid #ef4444;
 }
 
 /* ==========================================================================
@@ -479,9 +528,11 @@
 .mt-2 { margin-top: 16px !important; }
 .mt-3 { margin-top: 24px !important; }
 .mt-4 { margin-top: 32px !important; }
+.mt-5 { margin-top: 40px !important; }
 
 .mb-0 { margin-bottom: 0 !important; }
 .mb-1 { margin-bottom: 8px !important; }
 .mb-2 { margin-bottom: 16px !important; }
 .mb-3 { margin-bottom: 24px !important; }
 .mb-4 { margin-bottom: 32px !important; }
+.mb-5 { margin-bottom: 40px !important; }

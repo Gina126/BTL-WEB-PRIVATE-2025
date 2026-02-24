@@ -14,7 +14,7 @@ let firstBtn, prevBtn, nextBtn, lastBtn;
 
 // ================== INIT ==================
 document.addEventListener("DOMContentLoaded", () => {
-  moviesGrid = document.querySelector(".movies-grid");
+  moviesGrid = document.getElementById("movies-grid");
   currentPageEl = document.getElementById("currentPage");
   totalPageEl = document.getElementById("totalPage");
 
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================== FETCH MOVIES ==================
 async function loadMovies(page = 1) {
   currentPage = page;
-  moviesGrid.innerHTML = `<p style="padding:20px">🎬 Đang tải phim...</p>`;
+  renderSkeleton("movies-grid", 12);
 
   try {
     const res = await fetch(`${API_URL}?page=${page}`);
@@ -57,53 +57,7 @@ async function loadMovies(page = 1) {
 
 // ================== RENDER ==================
 function renderMovies(movies) {
-  moviesGrid.innerHTML = "";
-
-  movies.forEach((movie) => {
-    const poster = movie.thumb_url
-      ? `https://img.ophim1.com/uploads/movies/${movie.thumb_url}`
-      : movie.poster_url
-        ? `https://img.ophim1.com/uploads/movies/${movie.poster_url}`
-        : "https://placehold.co/300x450?text=No+Image";
-
-    const card = document.createElement("div");
-    card.className = "movie-card";
-
-    card.innerHTML = `
-      <div class="movie-badges">
-        <span class="badge badge-quality">${movie.quality || "HD"}</span>
-        <span class="badge badge-subbed">${movie.lang || "Vietsub"}</span>
-      </div>
-
-      <div class="movie-poster">
-        <img 
-          src="${poster}"
-          alt="${movie.name}"
-          loading="lazy"
-          onerror="this.src='https://placehold.co/300x450?text=No+Image'"
-        >
-        <div class="poster-overlay">
-          <div class="play-icon">
-            <i class="fa-solid fa-play"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="movie-info">
-        <h3 class="movie-title">${movie.name}</h3>
-        <p class="movie-origin-name">${movie.origin_name || ""}</p>
-        <div class="movie-meta">
-          <span>${movie.year || "?"}</span>
-          <span>${movie.time || "Đang cập nhật"}</span>
-        </div>
-      </div>
-    `;
-    card.addEventListener("click", () => {
-      window.location.href = `./detail.html?slug=${encodeURIComponent(movie.slug)}`;
-    });
-
-    moviesGrid.appendChild(card);
-  });
+  moviesGrid.innerHTML = movies.map((movie) => createMovieCard(movie)).join("");
 }
 
 // ================== PAGINATION ==================

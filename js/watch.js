@@ -247,15 +247,22 @@ function renderMovie() {
         }
     }
 
-    // Description - strip HTML tags properly
+    // Description - Right side with "..." link to detail
     const descEl = document.getElementById("movie-description");
     if (descEl && currentMovie.content) {
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = currentMovie.content;
         const cleanText = tempDiv.textContent || tempDiv.innerText || "";
-        descEl.textContent = truncateText(cleanText, 300);
+        
+        const maxLength = 250;
+        if (cleanText.length > maxLength) {
+            const shortText = cleanText.substring(0, maxLength);
+            descEl.innerHTML = `${shortText}<span class="description-more-link" onclick="location.href='./detail.html?slug=${currentMovie.slug}'" title="Xem thông tin chi tiết">...</span>`;
+        } else {
+            descEl.innerHTML = `${cleanText} <span class="description-more-link-small" onclick="location.href='./detail.html?slug=${currentMovie.slug}'" title="Xem thông tin chi tiết">[Chi tiết]</span>`;
+        }
     } else if (descEl) {
-        descEl.textContent = "Đang cập nhật...";
+        descEl.textContent = "Đang cập nhật mô tả...";
     }
 
 
@@ -327,6 +334,9 @@ function renderVideo() {
                         qualitySelector.style.display = "block";
                         setupQualitySelector(hls);
                     }
+
+                    // Initialize Custom Controls
+                    initCustomControls(video);
                 });
 
                 // Listen for level switch to update label
@@ -438,6 +448,148 @@ function setupQualitySelector(hls) {
             menu.classList.remove("active");
         };
     });
+}
+
+/**
+ * Initialize Custom Video Player Controls
+ */
+function initCustomControls(video) {
+    const container = document.getElementById("player-container");
+    const controls = document.getElementById("custom-controls");
+    const playPauseBtn = document.getElementById("play-pause-btn");
+    const rewindBtn = document.getElementById("rewind-btn");
+    const forwardBtn = document.getElementById("forward-btn");
+    const volumeBtn = document.getElementById("volume-btn");
+    const volumeSlider = document.getElementById("volume-slider");
+    const seekbar = document.getElementById("seekbar");
+    const seekbarProgress = document.getElementById("seekbar-progress");
+    const currentTimeEl = document.getElementById("current-time");
+    const durationTimeEl = document.getElementById("duration-time");
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
+    const autoNextToggle = document.getElementById("auto-next-toggle");
+
+    if (!video || !controls) return;
+
+    controls.style.display = "flex";
+
+    // Play / Pause
+    const togglePlay = () => {
+        if (video.paused) {
+            video.play();
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        } else {
+            video.pause();
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        }
+    };
+
+    playPauseBtn.onclick = togglePlay;
+    video.onclick = togglePlay;
+
+    // Skip 10s
+    rewindBtn.onclick = () => { video.currentTime -= 10; };
+    forwardBtn.onclick = () => { video.currentTime += 10; };
+
+    // Volume
+    volumeSlider.oninput = (e) => {
+        video.volume = e.target.value;
+        updateVolumeIcon(video.volume);
+    };
+
+    volumeBtn.onclick = () => {
+        if (video.volume > 0) {
+            video.dataset.lastVolume = video.volume;
+            video.volume = 0;
+            volumeSlider.value = 0;
+        } else {
+            video.volume = parseFloat(video.dataset.lastVolume) || 1;
+            volumeSlider.value = video.volume;
+        }
+        updateVolumeIcon(video.volume);
+    };
+
+    function updateVolumeIcon(vol) {
+        const icon = volumeBtn.querySelector("i");
+        if (vol === 0) icon.className = "fas fa-volume-mute";
+        else if (vol < 0.5) icon.className = "fas fa-volume-down";
+        else icon.className = "fas fa-volume-up";
+    }
+
+    // Seek / Progress
+    video.ontimeupdate = () => {
+        const percent = (video.currentTime / video.duration) * 100;
+        seekbar.value = percent;
+        seekbarProgress.style.width = percent + "%";
+        currentTimeEl.textContent = formatTime(video.currentTime);
+        
+        // Auto-next logic check
+        if (video.currentTime === video.duration && autoNextToggle.checked) {
+            // Handled by onended, but this is a backup
+        }
+    };
+
+    video.onloadedmetadata = () => {
+        durationTimeEl.textContent = formatTime(video.duration);
+    };
+
+    seekbar.oninput = (e) => {
+        const time = (e.target.value / 100) * video.duration;
+        video.currentTime = time;
+    };
+
+    // Fullscreen
+    fullscreenBtn.onclick = () => {
+        if (!document.fullscreenElement) {
+            container.requestFullscreen().catch(err => {
+                alert(`Error: ${err.message}`);
+            });
+            fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+        } else {
+            document.exitFullscreen();
+            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        }
+    };
+
+    // Auto-next event refinement
+    video.onended = () => {
+        if (autoNextToggle.checked) {
+            console.log("Auto-next enabled, switching...");
+            playNextEpisode();
+        } else {
+            console.log("Auto-next disabled, stopping.");
+            playPauseBtn.innerHTML = '<i class="fas fa-redo"></i>';
+        }
+    };
+
+    // Control visibility logic
+    let timeout;
+    container.onmousemove = () => {
+        controls.classList.add("active");
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            if (!video.paused) controls.classList.remove("active");
+        }, 3000);
+    };
+
+    // Keyboard shortcuts
+    document.onkeydown = (e) => {
+        if (document.activeElement.tagName === "INPUT") return;
+        
+        if (e.code === "Space") { e.preventDefault(); togglePlay(); }
+        if (e.code === "ArrowRight") video.currentTime += 10;
+        if (e.code === "ArrowLeft") video.currentTime -= 10;
+        if (e.code === "ArrowUp") { e.preventDefault(); video.volume = Math.min(1, video.volume + 0.1); volumeSlider.value = video.volume; updateVolumeIcon(video.volume); }
+        if (e.code === "ArrowDown") { e.preventDefault(); video.volume = Math.max(0, video.volume - 0.1); volumeSlider.value = video.volume; updateVolumeIcon(video.volume); }
+    };
+}
+
+function formatTime(seconds) {
+    if (isNaN(seconds)) return "00:00";
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
 // Load Seasons Logic
@@ -656,7 +808,7 @@ async function loadRecommendations() {
     const list = document.getElementById("recommendations-list");
     if (!list) return;
 
-    list.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>';
+    renderSkeleton("recommendations-list", 6);
 
     try {
         const res = await getRecommendedMovies(currentMovie.category || [], 6);
@@ -665,56 +817,7 @@ async function loadRecommendations() {
             return;
         }
 
-        list.innerHTML = res.data.data.items.slice(0, 6).map(m => {
-            const cdnUrl = "https://img.ophim.live/uploads/movies/";
-            const imgPath = m.poster_url || m.thumb_url;
-            const imgSrc = imgPath.startsWith('http') ? imgPath : (cdnUrl + imgPath);
-            
-            // Metadata parsing
-            const originName = m.origin_name || m.tmdb?.original_title || "";
-            const year = m.year || "????";
-            
-            // Season/Episode Logic
-            const seasonMatch = m.name.match(/Phần (\d+)/i);
-            const seasonText = seasonMatch ? `Phần ${seasonMatch[1]}` : "Phần 1";
-            
-            // Episode text logic
-            // Use episode_current if available, else generic
-            // Episode text logic
-            let epText = m.quality || 'HD';
-            if (m.episode_current) {
-                const epLower = m.episode_current.toLowerCase();
-                // Check for special keywords to display AS IS (no "Tập" prefix)
-                if (epLower.includes("tập") || 
-                    epLower.includes("full") || 
-                    epLower.includes("trailer") || 
-                    epLower.includes("hoàn tất") ||
-                    epLower.includes("trọn bộ")) {
-                    epText = m.episode_current;
-                } else {
-                    // Standard numbers get "Tập" prefix
-                    epText = `Tập ${m.episode_current}`;
-                }
-            }
-
-            return `
-            <div class="rec-item" onclick="location.href='watch.html?slug=${m.slug}'">
-                <img src="${imgSrc}" alt="${m.name}" 
-                     loading="lazy"
-                     onerror="this.src='https://placehold.co/100x140/1a1c26/666?text=POSTER'">
-                <div class="rec-info">
-                    <h4>${truncateText(m.name, 50)}</h4>
-                    <p class="rec-subtitle">${originName}</p>
-                    <div class="rec-meta">
-                        <span class="meta-tag min-tag">${year}</span>
-                        <span class="meta-bullet">•</span>
-                        <span class="meta-text">${seasonText}</span>
-                        <span class="meta-bullet">•</span>
-                        <span class="meta-text">${epText}</span>
-                    </div>
-                </div>
-            </div>
-        `}).join("");
+        list.innerHTML = res.data.data.items.slice(0, 6).map(m => createMovieCard(m)).join("");
     } catch (e) {
         console.error("Recommendations error:", e);
         list.innerHTML = '<p class="no-data">Lỗi tải đề xuất</p>';
@@ -920,4 +1023,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btn-rate-action')?.addEventListener('click', scrollToComments);
     document.getElementById('btn-comment-scroll')?.addEventListener('click', scrollToComments);
+});
+
+// Comment Submission Handler (Coming Soon)
+document.addEventListener("click", (e) => {
+    if (e.target.closest(".send-btn")) {
+        e.preventDefault();
+        showToast("Vui lòng đăng nhập để bình luận", "info");
+    }
 });

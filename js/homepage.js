@@ -1,9 +1,27 @@
 // js/homepage.js
-const IMAGE_HOST = "https://img.ophim1.com/uploads/movies/";
+/**
+ * Render phim ra lưới
+ */
+function renderMoviesToGrid(movies, gridId) {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+
+  if (!movies || movies.length === 0) {
+    grid.innerHTML = `<p style="grid-column: 1/-1; padding: 20px; color: #777;">Đang cập nhật phim...</p>`;
+    return;
+  }
+
+  grid.innerHTML = movies.map((movie) => createMovieCard(movie)).join("");
+}
 
 async function initHomePage() {
   try {
     console.log("--- Khởi tạo trang chủ chuyên nghiệp ---");
+
+    // Hiển thị Skeleton Loading trong khi chờ API
+    renderSkeleton("movieGrid", 6);
+    renderSkeleton("phimLeGrid", 6);
+    renderSkeleton("phimBoGrid", 6);
 
     // 1. Danh sách URL API
     const API_NEW = "https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=1";
@@ -116,46 +134,5 @@ function updateHero(movie) {
   }
 }
 
-/**
- * Render phim ra lưới
- */
-function renderMoviesToGrid(movies, gridId) {
-  const grid = document.getElementById(gridId);
-  if (!grid) return;
-
-  if (!movies || movies.length === 0) {
-    grid.innerHTML = `<p style="grid-column: 1/-1; padding: 20px; color: #777;">Đang cập nhật phim...</p>`;
-    return;
-  }
-
-  grid.innerHTML = movies
-    .map((movie) => {
-      const badge = movie.episode_current || movie.quality || "HD";
-      const thumb = movie.thumb_url || movie.poster_url || "";
-      const finalImg = thumb.startsWith("http")
-        ? thumb
-        : `${IMAGE_HOST}${thumb}`;
-
-      const slug = movie.slug || "";
-      const safeSlug = encodeURIComponent(slug);
-
-      return `
-        <div class="movie-card" style="cursor:pointer"
-             onclick="location.href='./detail.html?slug=${safeSlug}'">
-          <div class="badge">${badge}</div>
-          <div class="movie-poster">
-            <img src="${finalImg}" alt="${movie.name || ""}" loading="lazy"
-                 onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
-            <div class="play-overlay"><i class="fas fa-play"></i></div>
-          </div>
-          <div class="movie-info">
-            <h3 title="${movie.name || ""}">${movie.name || ""}</h3>
-            <p>${movie.year || "2026"}</p>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
-}
 
 document.addEventListener("DOMContentLoaded", initHomePage);

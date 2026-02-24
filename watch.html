@@ -37,18 +37,66 @@
 
         <!-- Video Section -->
         <section class="video-section">
-            <div class="video-container">
+            <div class="video-container" id="player-container">
                 <iframe id="video-iframe" src="" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="display: none;"></iframe>
-                <video id="hls-player" controls preload="auto" style="display: none; width: 100%; height: 100%; background: #000;"></video>
+                <video id="hls-player" preload="auto" style="display: none; width: 100%; height: 100%; background: #000;"></video>
                 
-                <!-- Floating Quality Selector -->
-                <div id="quality-selector" class="quality-selector" style="display: none;">
-                    <button class="quality-btn" id="quality-current-btn">
-                        <i class="fas fa-gear"></i>
-                        <span id="current-quality-label">Auto</span>
-                    </button>
-                    <div class="quality-menu" id="quality-menu">
-                        <!-- Levels will be injected here -->
+                <!-- Custom Video Controls Overlay -->
+                <div id="custom-controls" class="custom-controls" style="display: none;">
+                    <!-- Seek Bar -->
+                    <div class="seekbar-container">
+                        <div class="seekbar-progress" id="seekbar-progress"></div>
+                        <input type="range" id="seekbar" class="seekbar-input" min="0" max="100" value="0">
+                    </div>
+
+                    <div class="controls-main">
+                        <div class="controls-left">
+                            <button class="ctrl-btn" id="play-pause-btn" title="Phát/Tạm dừng">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="ctrl-btn" id="rewind-btn" title="Lùi 10s">
+                                <i class="fas fa-undo"></i>
+                                <span class="skip-label">10</span>
+                            </button>
+                            <button class="ctrl-btn" id="forward-btn" title="Tiến 10s">
+                                <i class="fas fa-redo"></i>
+                                <span class="skip-label">10</span>
+                            </button>
+                            
+                            <div class="volume-container">
+                                <button class="ctrl-btn" id="volume-btn">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                                <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.1" value="1">
+                            </div>
+
+                            <div class="time-display">
+                                <span id="current-time">00:00</span> / <span id="duration-time">00:00</span>
+                            </div>
+                        </div>
+
+                        <div class="controls-right">
+                            <div class="auto-next-wrapper">
+                                <span class="auto-next-label">Chuyển tập</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="auto-next-toggle" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            
+                            <!-- Existing Quality Selector relocated here or kept floating -->
+                            <div id="quality-selector" class="quality-selector-v2">
+                                <button class="quality-btn-v2" id="quality-current-btn">
+                                    <i class="fas fa-gear"></i>
+                                    <span id="current-quality-label">Auto</span>
+                                </button>
+                                <div class="quality-menu" id="quality-menu"></div>
+                            </div>
+
+                            <button class="ctrl-btn" id="fullscreen-btn" title="Toàn màn hình">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -95,6 +143,11 @@
                             <i class="fas fa-check-circle"></i> 
                             <span id="status-text">Đang cập nhật</span>
                         </div>
+                    </div>
+                    
+                    <!-- Movie Description (Right Side) -->
+                    <div id="movie-description-container" class="movie-description-right">
+                        <div id="movie-description" class="desc-content">Đang tải mô tả...</div>
                     </div>
                 </section>
 

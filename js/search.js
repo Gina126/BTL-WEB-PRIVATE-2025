@@ -27,7 +27,7 @@ async function renderSearchResults(keyword) {
   const grid = document.getElementById("searchResultGrid");
   if (!grid) return;
 
-  grid.innerHTML = '<div class="loading-full"><i class="fas fa-spinner fa-spin"></i> Đang tìm kiếm phim...</div>';
+  renderSkeleton("searchResultGrid", 12);
 
   try {
     const res = await searchMovies(keyword);
@@ -42,32 +42,7 @@ async function renderSearchResults(keyword) {
     }
 
     const movies = res.data.data.items;
-    const IMAGE_HOST = "https://img.ophim.live/uploads/movies/";
-
-    grid.innerHTML = movies.map(movie => {
-      const thumb = movie.thumb_url.startsWith('http') 
-        ? movie.thumb_url 
-        : `${IMAGE_HOST}${movie.thumb_url}`;
-      
-      const badge = movie.episode_current ? `Tập ${movie.episode_current}` : (movie.quality || "HD");
-      const year = movie.year || "2024";
-
-      return `
-        <div class="movie-card" onclick="location.href='detail.html?slug=${movie.slug}'">
-            <div class="badge">${badge}</div>
-            <div class="movie-poster">
-                <img src="${thumb}" alt="${movie.name}" loading="lazy" onerror="this.src='https://placehold.co/200x300/1a1c26/666?text=Lỗi+Ảnh'">
-                <div class="play-overlay">
-                    <i class="fas fa-play"></i>
-                </div>
-            </div>
-            <div class="movie-info">
-                <h3 title="${movie.name}">${movie.name}</h3>
-                <p>${year}</p>
-            </div>
-        </div>
-      `;
-    }).join("");
+    grid.innerHTML = movies.map((movie) => createMovieCard(movie)).join("");
 
   } catch (error) {
     console.error("Search Page Error:", error);

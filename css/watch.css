@@ -26,88 +26,267 @@
     border: none;
 }
 
-/* Floating Quality Selector */
-.quality-selector {
+/* Custom Video Controls Overlay */
+.custom-controls {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+    padding: 20px 15px 10px;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
 }
 
-.quality-btn {
-    background: rgba(15, 17, 26, 0.6);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+.video-container:hover .custom-controls,
+.video-container:focus-within .custom-controls,
+.custom-controls.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Seek Bar */
+.seekbar-container {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.seekbar-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #ffd875;
+    border-radius: 2px;
+    z-index: 1;
+}
+
+.seekbar-input {
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+/* Main Controls */
+.controls-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.controls-left, .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.ctrl-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px; /* Slightly larger for better clarity */
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.ctrl-btn:hover {
+    color: #ffd875;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.skip-label {
+    position: absolute;
+    font-size: 8px;
+    font-weight: 800;
+    top: 55%; /* Adjusted for better centering within icons */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    color: #fff;
+}
+
+.ctrl-btn:hover .skip-label {
+    color: #ffd875;
+}
+
+/* Volume Control Improvements */
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.volume-slider {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: width 0.3s ease, opacity 0.3s ease;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
+}
+
+.volume-container:hover .volume-slider {
+    width: 80px;
+    opacity: 1;
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: #ffd875;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -4px; /* Center thumb on track */
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.volume-slider::-moz-range-thumb {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: #ffd875;
+    cursor: pointer;
+    border: none;
+}
+
+/* Time Display */
+.time-display {
+    font-size: 13px;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    min-width: 100px;
+}
+
+/* Auto-next Toggle */
+.auto-next-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auto-next-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+/* Floating Quality Selector V2 */
+.quality-selector-v2 {
+    position: relative;
+}
+
+.quality-btn-v2 {
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
+    gap: 6px;
 }
 
-.quality-btn:hover {
-    background: rgba(15, 17, 26, 0.8);
+.quality-btn-v2:hover {
     border-color: #ffd875;
-}
-
-.quality-btn i {
-    font-size: 14px;
     color: #ffd875;
 }
 
-.quality-menu {
+/* Switch UI */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
     position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    background: rgba(15, 17, 26, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    padding: 8px;
-    min-width: 120px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.quality-menu.active {
-    display: flex;
-    animation: fadeInDown 0.2s ease-out;
-}
-
-.quality-item {
-    padding: 8px 12px;
-    color: #aaa;
-    font-size: 13px;
-    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .4s;
 }
 
-.quality-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
 }
 
-.quality-item.active {
-    background: rgba(255, 216, 117, 0.1);
-    color: #ffd875;
-    font-weight: 600;
+input:checked + .slider {
+    background-color: #ffd875;
 }
 
-@keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+input:checked + .slider:before {
+    transform: translateX(14px);
 }
+
+.slider.round {
+    border-radius: 20px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Existing Floating Selector adjustments */
+/* End of customizations */
 
 /* Video Toolbar */
 .video-toolbar {
@@ -720,63 +899,60 @@
     transform: scale(1.05);
 }
 
-/* Recommendations */
+/* Recommendations - Sidebar Version */
 .recommendations-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Increased gap */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
 }
 
-.rec-item {
-    display: flex;
-    gap: 15px; /* Increased gap */
-    padding: 12px; /* Increased padding */
-    background: rgba(255, 255, 255, 0.03);
+/* Scoped adjustments for movie-card inside sidebar đề xuất 
+   To make them fit perfectly without being too big */
+.recommendations-list .movie-card {
+    background: transparent;
     border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
 }
 
-.rec-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateX(5px);
+.recommendations-list .movie-card .movie-poster {
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.rec-item img {
-    width: 85px; /* Increased from 70px */
-    height: 120px; /* Increased from 100px */
-    object-fit: cover;
-    border-radius: 6px;
+.recommendations-list .movie-card .movie-info {
+    padding: 8px 4px;
 }
 
-.rec-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.rec-info h4 {
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-    margin: 0 0 4px 0; /* Reduced margin */
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.rec-subtitle {
+.recommendations-list .movie-card .movie-title {
     font-size: 13px;
-    color: #888;
-    margin: 0 0 8px 0;
-    font-style: italic;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+
+.recommendations-list .movie-card .movie-origin-name,
+.recommendations-list .movie-card .movie-meta {
+    font-size: 11px;
+    opacity: 0.7;
+}
+
+.recommendations-list .movie-card .badge {
+    padding: 2px 6px;
+    font-size: 9px;
+    top: 6px;
+    left: 6px;
+}
+
+.recommendations-list .movie-card .btn-favorite {
+    width: 28px;
+    height: 28px;
+    top: 6px;
+    right: 6px;
+    font-size: 12px;
+}
+
+.recommendations-list .movie-card .play-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
 }
 
 .rec-meta {
@@ -1344,3 +1520,67 @@ input:checked + .slider:before {
     margin: 0;
 }
 
+
+/* ==========================================================================
+   MOVIE DESCRIPTION (WATCH PAGE)
+   ========================================================================== */
+
+.movie-description-right {
+    flex: 1.5;
+    padding-left: 25px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.desc-content {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #bbb;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.description-more-link {
+    color: #ffd875;
+    cursor: pointer;
+    font-weight: 700;
+    margin-left: 5px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.description-more-link:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.description-more-link-small {
+    font-size: 13px;
+    color: rgba(255, 216, 117, 0.6);
+    cursor: pointer;
+    margin-left: 5px;
+    transition: color 0.2s;
+    font-weight: 500;
+}
+
+.description-more-link-small:hover {
+    color: #ffd875;
+    text-decoration: underline;
+}
+
+@media (max-width: 992px) {
+    .movie-info-compact {
+        flex-direction: column;
+    }
+    
+    .movie-description-right {
+        padding-left: 0;
+        padding-top: 15px;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}

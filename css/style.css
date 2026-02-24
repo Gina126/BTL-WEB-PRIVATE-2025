@@ -291,7 +291,7 @@ ul {
   transition: transform 0.2s;
 }
 
-.menu-item:hover i {
+.menu-item:hover i.fa-caret-down {
   color: #ffd875;
   transform: rotate(180deg);
 }
