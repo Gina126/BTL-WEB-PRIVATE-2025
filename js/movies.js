@@ -1,18 +1,14 @@
-// ================== CONFIG ==================
 const API_URL = "https://ophim1.com/v1/api/danh-sach/phim-le";
 const ITEMS_PER_PAGE = 24;
 
-// ================== STATE ==================
 let currentPage = 1;
 let totalPages = 1;
 
-// ================== ELEMENTS ==================
 let moviesGrid;
 let currentPageEl;
 let totalPageEl;
 let firstBtn, prevBtn, nextBtn, lastBtn;
 
-// ================== INIT ==================
 document.addEventListener("DOMContentLoaded", () => {
   moviesGrid = document.querySelector(".movies-grid");
   currentPageEl = document.getElementById("currentPage");
@@ -27,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadMovies(1);
 });
 
-// ================== FETCH MOVIES ==================
 async function loadMovies(page = 1) {
   currentPage = page;
   moviesGrid.innerHTML = `<p style="padding:20px">🎬 Đang tải phim...</p>`;
@@ -55,7 +50,6 @@ async function loadMovies(page = 1) {
   }
 }
 
-// ================== RENDER ==================
 function renderMovies(movies) {
   moviesGrid.innerHTML = "";
 
@@ -74,6 +68,10 @@ function renderMovies(movies) {
         <span class="badge badge-quality">${movie.quality || "HD"}</span>
         <span class="badge badge-subbed">${movie.lang || "Vietsub"}</span>
       </div>
+
+      <button class="btn-favorite">
+    <i class="fa-regular fa-heart"></i>
+  </button>
 
       <div class="movie-poster">
         <img 
@@ -106,7 +104,6 @@ function renderMovies(movies) {
   });
 }
 
-// ================== PAGINATION ==================
 function updatePagination() {
   currentPageEl.textContent = currentPage;
   totalPageEl.textContent = totalPages;

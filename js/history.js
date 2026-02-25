@@ -1,26 +1,21 @@
-// ================== CONFIG ==================
 const HISTORY_KEY = "watch_history";
 const ITEMS_PER_PAGE = 12;
 
-// ================== STATE ==================
 let currentPage = 1;
 let totalPages = 1;
 let historyData = [];
 
-// ================== ELEMENTS ==================
 let historyGrid;
 let currentPageEl;
 let totalPageEl;
 let firstBtn, prevBtn, nextBtn, lastBtn;
 
-// ================== INIT ==================
 document.addEventListener("DOMContentLoaded", () => {
   initElements();
   setupPaginationEvents();
   loadHistory();
 });
 
-// ================== INIT ELEMENTS ==================
 function initElements() {
   historyGrid = document.getElementById("history-grid");
   currentPageEl = document.getElementById("currentPage");
@@ -32,7 +27,6 @@ function initElements() {
   lastBtn = document.getElementById("lastPage");
 }
 
-// ================== LOAD HISTORY ==================
 function loadHistory() {
   try {
     const stored = localStorage.getItem(HISTORY_KEY);
@@ -42,7 +36,6 @@ function loadHistory() {
     historyData = [];
   }
 
-  // Sắp xếp mới nhất trước
   historyData.sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt));
 
   totalPages = Math.max(1, Math.ceil(historyData.length / ITEMS_PER_PAGE));
@@ -53,7 +46,6 @@ function loadHistory() {
   updatePagination();
 }
 
-// ================== RENDER ==================
 function renderHistory(page) {
   historyGrid.innerHTML = "";
 
@@ -80,7 +72,6 @@ function renderHistory(page) {
   });
 }
 
-// ================== CREATE CARD ==================
 function createMovieCard(movie) {
   const poster = movie.poster || "https://placehold.co/300x450?text=No+Image";
 
@@ -125,12 +116,10 @@ function createMovieCard(movie) {
     </div>
   `;
 
-  // Click xem lại
   card.querySelector(".movie-poster").addEventListener("click", () => {
     window.location.href = `/detail.html?slug=${movie.slug}`;
   });
 
-  // Xoá khỏi lịch sử
   card.querySelector(".remove-btn").addEventListener("click", (e) => {
     e.stopPropagation();
     removeFromHistory(movie.slug);
@@ -139,19 +128,16 @@ function createMovieCard(movie) {
   return card;
 }
 
-// ================== REMOVE ==================
 function removeFromHistory(slug) {
   historyData = historyData.filter((item) => item.slug !== slug);
   saveHistory();
   loadHistory();
 }
 
-// ================== SAVE ==================
 function saveHistory() {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
 }
 
-// ================== CLEAR ALL ==================
 function clearAllHistory() {
   if (!confirm("Bạn có chắc muốn xoá toàn bộ lịch sử?")) return;
 
@@ -160,7 +146,6 @@ function clearAllHistory() {
   loadHistory();
 }
 
-// ================== PAGINATION ==================
 function updatePagination() {
   currentPageEl.textContent = currentPage;
   totalPageEl.textContent = totalPages;
@@ -190,7 +175,6 @@ function changePage(page) {
   updatePagination();
 }
 
-// ================== FORMAT DATE ==================
 function formatDate(dateString) {
   if (!dateString) return "Không rõ";
 
@@ -199,28 +183,26 @@ function formatDate(dateString) {
 }
 
 // ================== TEST DATA ==================
-function addTestHistory() {
-  const testData = [
-    {
-      slug: "naruto",
-      name: "Naruto",
-      poster: "https://placehold.co/300x450?text=Naruto",
-      watchedAt: new Date().toISOString(),
-      progress: 60,
-      episode: 120,
-    },
-    {
-      slug: "one-piece",
-      name: "One Piece",
-      poster: "https://placehold.co/300x450?text=One+Piece",
-      watchedAt: new Date(Date.now() - 86400000).toISOString(),
-      progress: 30,
-      episode: 1000,
-    },
-  ];
+// function addTestHistory() {
+//   const testData = [
+//     {
+//       slug: "naruto",
+//       name: "Naruto",
+//       poster: "https://placehold.co/300x450?text=Naruto",
+//       watchedAt: new Date().toISOString(),
+//       progress: 60,
+//       episode: 120,
+//     },
+//     {
+//       slug: "one-piece",
+//       name: "One Piece",
+//       poster: "https://placehold.co/300x450?text=One+Piece",
+//       watchedAt: new Date(Date.now() - 86400000).toISOString(),
+//       progress: 30,
+//       episode: 1000,
+//     },
+//   ];
 
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(testData));
-}
-
-// GỌI TEST Ở ĐÂY
-addTestHistory();
+//   localStorage.setItem(HISTORY_KEY, JSON.stringify(testData));
+// }
+// addTestHistory();

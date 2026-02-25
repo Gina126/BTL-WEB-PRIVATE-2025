@@ -1,18 +1,14 @@
-// ================== CONFIG ==================
 const API_URL = "https://ophim1.com/v1/api/danh-sach/phim-bo";
 const ITEMS_PER_PAGE = 24;
 
-// ================== STATE ==================
 let currentPage = 1;
 let totalPages = 1;
 
-// ================== ELEMENTS ==================
 let seriesGrid;
 let currentPageEl;
 let totalPageEl;
 let firstBtn, prevBtn, nextBtn, lastBtn;
 
-// ================== INIT ==================
 document.addEventListener("DOMContentLoaded", () => {
   seriesGrid = document.getElementById("series-grid");
   currentPageEl = document.getElementById("currentPage");
@@ -27,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadSeries(1);
 });
 
-// ================== FETCH ==================
 async function loadSeries(page = 1) {
   currentPage = page;
   seriesGrid.innerHTML = `<p style="padding:20px">📺 Đang tải phim bộ...</p>`;
@@ -55,7 +50,6 @@ async function loadSeries(page = 1) {
   }
 }
 
-// ================== RENDER ==================
 function renderSeries(seriesList) {
   seriesGrid.innerHTML = "";
 
@@ -113,7 +107,6 @@ function renderSeries(seriesList) {
   });
 }
 
-// ================== PAGINATION ==================
 function updatePagination() {
   currentPageEl.textContent = currentPage;
   totalPageEl.textContent = totalPages;

@@ -527,7 +527,6 @@ ul {
   font-size: 12px;
 }
 
-<<<<<<< Updated upstream
 .pagination {
   display: flex;
   justify-content: center;
@@ -561,7 +560,7 @@ ul {
 .page-info {
   color: #aaa;
   font-size: 14px;
-=======
+}
 /* Scroll to Top Button (Global) */
 .scroll-to-top {
   position: fixed;
@@ -596,5 +595,4 @@ ul {
   background: #f0f0f0;
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
->>>>>>> Stashed changes
 }
