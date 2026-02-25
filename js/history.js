@@ -1,5 +1,5 @@
 // ================== CONFIG ==================
-const HISTORY_KEY = "watch_history";
+const HISTORY_KEY = "rophim_watch_history";
 const ITEMS_PER_PAGE = 12;
 
 // ================== STATE ==================
@@ -34,23 +34,29 @@ function initElements() {
 
 // ================== LOAD HISTORY ==================
 function loadHistory() {
-  try {
-    const stored = localStorage.getItem(HISTORY_KEY);
-    historyData = stored ? JSON.parse(stored) : [];
-  } catch (error) {
-    console.error("History parse error:", error);
-    historyData = [];
-  }
+  // Hiển thị skeleton loading
+  renderSkeleton("history-grid", 12);
 
-  // Sắp xếp mới nhất trước
-  historyData.sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt));
+  // Tạo một khoảng trễ nhỏ để giả lập quá trình nạp dữ liệu mượt mà
+  setTimeout(() => {
+    try {
+      const stored = localStorage.getItem(HISTORY_KEY);
+      historyData = stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error("History parse error:", error);
+      historyData = [];
+    }
 
-  totalPages = Math.max(1, Math.ceil(historyData.length / ITEMS_PER_PAGE));
+    // Sắp xếp mới nhất trước
+    historyData.sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt));
 
-  if (currentPage > totalPages) currentPage = totalPages;
+    totalPages = Math.max(1, Math.ceil(historyData.length / ITEMS_PER_PAGE));
 
-  renderHistory(currentPage);
-  updatePagination();
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    renderHistory(currentPage);
+    updatePagination();
+  }, 400);
 }
 
 // ================== RENDER ==================
@@ -62,7 +68,7 @@ function renderHistory(page) {
       <div style="padding:40px;text-align:center;color:#aaa">
         <i class="fa-solid fa-film" style="font-size:48px;margin-bottom:12px;"></i>
         <p>Bạn chưa xem phim nào.</p>
-        <a href="/movies.html" style="color:var(--primary-color)">
+        <a href="movies.html" style="color:var(--primary-color)">
           Xem phim ngay →
         </a>
       </div>
@@ -75,68 +81,44 @@ function renderHistory(page) {
   const currentItems = historyData.slice(start, end);
 
   currentItems.forEach((movie) => {
-    const card = createMovieCard(movie);
+    // Sử dụng card chuẩn
+    const cardHtml = createMovieCard(movie);
+    const temp = document.createElement("div");
+    temp.innerHTML = cardHtml.trim();
+    const card = temp.firstChild;
+
+    // Bổ sung nút xóa lịch sử cạnh nút yêu thích
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "btn-remove-history";
+    removeBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+    removeBtn.title = "Xóa khỏi lịch sử";
+    removeBtn.style.cssText = `
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      border: none;
+      z-index: 10;
+      cursor: pointer;
+    `;
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      removeFromHistory(movie.slug);
+    };
+    card.appendChild(removeBtn);
+
+    // Thay đổi link mặc định cho Poster (về watch thay vì detail)
+    const poster = card.querySelector(".movie-poster");
+    poster.onclick = () => {
+      window.location.href = `watch.html?slug=${movie.slug}&ep=${movie.episode || "1"}`;
+    };
+
     historyGrid.appendChild(card);
   });
-}
-
-// ================== CREATE CARD ==================
-function createMovieCard(movie) {
-  const poster = movie.poster || "https://placehold.co/300x450?text=No+Image";
-
-  const progressText =
-    movie.progress && movie.progress > 0
-      ? `Đã xem ${Math.floor(movie.progress)}%`
-      : movie.episode
-        ? `Đã xem Tập ${movie.episode}`
-        : "Đã xem";
-
-  const card = document.createElement("div");
-  card.className = "movie-card";
-
-  card.innerHTML = `
-    <div class="movie-badges">
-      <span class="badge badge-episode">${progressText}</span>
-    </div>
-
-    <button class="btn-favorite remove-btn" title="Xoá khỏi lịch sử">
-      <i class="fa-solid fa-trash"></i>
-    </button>
-
-    <div class="movie-poster">
-      <img 
-        src="${poster}"
-        alt="${movie.name}"
-        loading="lazy"
-        onerror="this.src='https://placehold.co/300x450?text=No+Image'"
-      >
-      <div class="poster-overlay">
-        <div class="play-icon">
-          <i class="fa-solid fa-play"></i>
-        </div>
-      </div>
-    </div>
-
-    <div class="movie-info">
-      <h3 class="movie-title">${movie.name}</h3>
-      <div class="movie-meta">
-        <span>Xem lần cuối: ${formatDate(movie.watchedAt)}</span>
-      </div>
-    </div>
-  `;
-
-  // Click xem lại
-  card.querySelector(".movie-poster").addEventListener("click", () => {
-    window.location.href = `/detail.html?slug=${movie.slug}`;
-  });
-
-  // Xoá khỏi lịch sử
-  card.querySelector(".remove-btn").addEventListener("click", (e) => {
-    e.stopPropagation();
-    removeFromHistory(movie.slug);
-  });
-
-  return card;
 }
 
 // ================== REMOVE ==================
@@ -222,5 +204,4 @@ function addTestHistory() {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(testData));
 }
 
-// GỌI TEST Ở ĐÂY
-addTestHistory();
+// addTestHistory(); // ← Bỏ comment này để test, nhớ xóa sau

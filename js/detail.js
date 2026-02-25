@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     let episodes = movie.episodes || res.data.episodes || [];
 
     renderMovie(movie, episodes);
+    
+    // Load recommendations
+    loadRecommendations(movie.category);
 
     loadingEl.style.display = "none";
     contentEl.style.display = "block";
@@ -145,4 +148,42 @@ function renderEpisodes(slug, episodes) {
 
 function goToWatch(slug, ep) {
   window.location.href = `watch.html?slug=${slug}&ep=${ep}`;
+}
+
+/**
+ * Tải và hiển thị danh sách phim đề xuất
+ * @param {Array} categories - Danh sách thể loại của phim hiện tại
+ */
+async function loadRecommendations(categories) {
+  const grid = document.getElementById('recommendationGrid');
+  if (!grid) return;
+
+  // Hiển thị skeleton loading
+  if (typeof renderSkeleton === 'function') {
+    renderSkeleton('recommendationGrid', 6);
+  }
+
+  try {
+    // getRecommendedMovies đã được định nghĩa global trong api.js
+    const res = await getRecommendedMovies(categories, 6);
+    
+    if (res.success && res.data?.data?.items) {
+      const movies = res.data.data.items;
+      
+      if (movies.length > 0) {
+        // Sử dụng hàm createMovieCard từ utils.js
+        grid.innerHTML = movies
+          .slice(0, 6)
+          .map(movie => createMovieCard(movie))
+          .join('');
+      } else {
+        grid.innerHTML = '<p style="grid-column: 1/-1; padding: 20px; color: #777;">Không có đề xuất phù hợp.</p>';
+      }
+    } else {
+      throw new Error('Không thể lấy dữ liệu đề xuất');
+    }
+  } catch (error) {
+    console.error('Error loading recommendations:', error);
+    grid.innerHTML = '<p style="grid-column: 1/-1; padding: 20px; color: #777;">Lỗi tải phim đề xuất.</p>';
+  }
 }

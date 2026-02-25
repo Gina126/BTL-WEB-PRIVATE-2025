@@ -305,6 +305,77 @@ function formatNumber(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
+/**
+ * Tạo thẻ phim (Movie Card) chuẩn dùng chung cho toàn dự án
+ * @param {Object} movie - Đối tượng phim
+ * @returns {string} - HTML của thẻ phim
+ */
+function createMovieCard(movie) {
+  const thumb = movie.poster_url || movie.thumb_url || movie.poster || "";
+  const finalImg = thumb.startsWith("http")
+    ? thumb
+    : `${API_CONFIG.IMAGE_HOST}${thumb}`;
+
+  const slug = movie.slug || "";
+  const safeSlug = encodeURIComponent(slug);
+  const badge = movie.episode_current || movie.quality || "HD";
+  const name = movie.name || "";
+  const originName = movie.origin_name || "";
+  const year = movie.year || "2026";
+
+  const isFav = isInFavorites(slug);
+
+  return `
+    <div class="movie-card" data-slug="${slug}">
+      <div class="movie-poster" onclick="location.href='./detail.html?slug=${safeSlug}'">
+        <img src="${finalImg}" alt="${name}" loading="lazy"
+             onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+        <div class="poster-overlay">
+          <div class="play-icon"><i class="fas fa-play"></i></div>
+        </div>
+      </div>
+      <div class="movie-badges">
+        <span class="badge badge-quality">${badge}</span>
+      </div>
+      <button class="btn-favorite ${isFav ? "active" : ""}" 
+              data-movie='${JSON.stringify({ slug, name, poster_url: thumb }).replace(/'/g, "&apos;")}'
+              title="${isFav ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"}">
+        <i class="${isFav ? "fa-solid" : "fa-regular"} fa-heart"></i>
+      </button>
+      <div class="movie-info" onclick="location.href='./detail.html?slug=${safeSlug}'">
+        <h3 class="movie-title" title="${name}">${name}</h3>
+        <p class="movie-origin-name">${originName}</p>
+        <div class="movie-meta">
+          <span>${year}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+
+/**
+ * Render skeleton loading items
+ * @param {string} gridId - ID của container grid
+ * @param {number} count - Số lượng thẻ skeleton muốn hiện
+ */
+function renderSkeleton(gridId, count = 6) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div class="skeleton-card">
+                <div class="skeleton-poster skeleton-loading"></div>
+                <div class="skeleton-title skeleton-loading"></div>
+                <div class="skeleton-meta skeleton-loading"></div>
+            </div>
+        `;
+    }
+    grid.innerHTML = html;
+}
+
 // Export các hàm
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
@@ -330,5 +401,6 @@ if (typeof module !== "undefined" && module.exports) {
     smoothScrollTo,
     copyToClipboard,
     formatNumber,
+    createMovieCard,
   };
 }

@@ -20,13 +20,13 @@
     <link rel="stylesheet" href="./css/style.css" />
     <link rel="stylesheet" href="./css/components.css" />
 
-    <!-- JS -->
-    <script src="./js/components.js"></script>
+    <!-- JS - Load theo đúng thứ tự dependency -->
     <script src="./js/config.js"></script>
     <script src="./js/utils.js"></script>
     <script src="./js/api.js"></script>
-    <script src="./js/history.js" defer></script>
     <script src="./js/main.js"></script>
+    <script src="./js/components.js"></script>
+    <script src="./js/history.js" defer></script>
   </head>
 
   <body>
@@ -41,7 +41,7 @@
           Lịch sử xem
         </h2>
 
-        <div class="movies-grid" id="history-grid"></div>
+        <div class="movie-grid" id="history-grid"></div>
 
         <div class="pagination">
           <button class="page-btn" id="firstPage" title="Về trang đầu">

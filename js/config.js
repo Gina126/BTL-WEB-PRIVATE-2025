@@ -1,5 +1,6 @@
 const API_CONFIG = {
   BASE_URL: "https://ophim1.com",
+  IMAGE_HOST: "https://img.ophim1.com/uploads/movies/",
 
   BACKUP_URL: "https://ophim18.cc",
 
