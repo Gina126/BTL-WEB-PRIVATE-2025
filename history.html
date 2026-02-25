@@ -25,7 +25,8 @@
     <script src="./js/config.js"></script>
     <script src="./js/utils.js"></script>
     <script src="./js/api.js"></script>
-    <script src="./js/main.js" defer></script>
+    <script src="./js/history.js" defer></script>
+    <script src="./js/main.js"></script>
   </head>
 
   <body>
@@ -40,79 +41,8 @@
           Lịch sử xem
         </h2>
 
-        <div class="movies-grid" id="history-grid">
-          <!-- History item -->
-          <div class="movie-card">
-            <!-- Badges -->
-            <div class="movie-badges">
-              <span class="badge badge-episode">Đã xem Tập 7</span>
-              <span class="badge badge-subbed">Vietsub</span>
-            </div>
+        <div class="movies-grid" id="history-grid"></div>
 
-            <!-- Remove history -->
-            <button class="btn-favorite" title="Xoá khỏi lịch sử">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-
-            <!-- Poster -->
-            <div class="movie-poster">
-              <img
-                src="https://image.tmdb.org/t/p/w500/9PFonBhy4cQy7Jz20NpMygczOkv.jpg"
-                alt="Moving"
-              />
-              <div class="poster-overlay">
-                <div class="play-icon">
-                  <i class="fa-solid fa-play"></i>
-                </div>
-              </div>
-            </div>
-
-            <!-- Info -->
-            <div class="movie-info">
-              <h3 class="movie-title">Moving</h3>
-              <p class="movie-origin-name">무빙</p>
-
-              <div class="movie-meta">
-                <span>Xem lần cuối: 25/01/2026</span>
-              </div>
-            </div>
-          </div>
-          <!-- END history item -->
-
-          <!-- History item -->
-          <div class="movie-card">
-            <div class="movie-badges">
-              <span class="badge badge-episode">Đã xem 45%</span>
-              <span class="badge badge-subbed">Vietsub</span>
-            </div>
-
-            <button class="btn-favorite" title="Xoá khỏi lịch sử">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-
-            <div class="movie-poster">
-              <img
-                src="https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg"
-                alt="Avengers"
-              />
-              <div class="poster-overlay">
-                <div class="play-icon">
-                  <i class="fa-solid fa-play"></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="movie-info">
-              <h3 class="movie-title">Avengers: Endgame</h3>
-              <p class="movie-origin-name">Avengers: Endgame</p>
-
-              <div class="movie-meta">
-                <span>Xem lần cuối: 20/01/2026</span>
-              </div>
-            </div>
-          </div>
-          <!-- END history item -->
-        </div>
         <div class="pagination">
           <button class="page-btn" id="firstPage" title="Về trang đầu">
             <i class="fa-solid fa-angles-left"></i>
@@ -124,7 +54,7 @@
 
           <span class="page-info">
             Trang <strong id="currentPage">1</strong> /
-            <strong id="totalPage">10</strong>
+            <strong id="totalPage">1</strong>
           </span>
 
           <button class="page-btn" id="nextPage" title="Trang sau">

@@ -21,6 +21,12 @@ const API_CONFIG = {
     SINGLE_MOVIES: "/v1/api/danh-sach/phim-le",
 
     SERIES_MOVIES: "/v1/api/danh-sach/phim-bo",
+
+    // New TMDB endpoints
+    MOVIE_IMAGES: "/v1/api/phim/[slug]/images",
+    MOVIE_PEOPLES: "/v1/api/phim/[slug]/peoples",
+    MOVIE_KEYWORDS: "/v1/api/phim/[slug]/keywords",
+    MOVIE_LIST: "/v1/api/danh-sach/[slug]",
   },
 
   DEFAULT_PARAMS: {

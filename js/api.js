@@ -206,20 +206,74 @@ async function getRecommendedMovies(categories, limit = 12) {
   return await getMoviesByCategory(firstCategory.slug, 1);
 }
 
-// Export các hàm để sử dụng trong các file khác
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
-    fetchAPI,
-    getNewMovies,
-    getCategoriesList,
-    getCountriesList,
-    getMovieDetail,
-    searchMovies,
-    getMoviesByCategory,
-    getMoviesByCountry,
-    getSingleMovies,
-    getSeriesMovies,
-    getMovieStreamLink,
-    getRecommendedMovies,
-  };
+/**
+ * Lấy danh sách hình ảnh của phim
+ * @param {string} slug - Slug của phim
+ * @returns {Promise}
+ */
+async function getMovieImages(slug) {
+    const endpoint = API_CONFIG.ENDPOINTS.MOVIE_IMAGES.replace('[slug]', encodeURIComponent(slug));
+    const url = `${API_CONFIG.BASE_URL}${endpoint}`;
+    return await fetchAPI(url);
 }
+
+/**
+ * Lấy thông tin diễn viên, đạo diễn
+ * @param {string} slug - Slug của phim
+ * @returns {Promise}
+ */
+async function getMoviePeoples(slug) {
+    const endpoint = API_CONFIG.ENDPOINTS.MOVIE_PEOPLES.replace('[slug]', encodeURIComponent(slug));
+    const url = `${API_CONFIG.BASE_URL}${endpoint}`;
+    return await fetchAPI(url);
+}
+
+/**
+ * Lấy từ khóa của phim
+ * @param {string} slug - Slug của phim
+ * @returns {Promise}
+ */
+async function getMovieKeywords(slug) {
+    const endpoint = API_CONFIG.ENDPOINTS.MOVIE_KEYWORDS.replace('[slug]', encodeURIComponent(slug));
+    const url = `${API_CONFIG.BASE_URL}${endpoint}`;
+    return await fetchAPI(url);
+}
+
+/**
+ * Lấy danh sách phim theo slug danh sách
+ * @param {string} listSlug - Slug danh sách
+ * @param {number} page - Số trang
+ * @returns {Promise}
+ */
+async function getMoviesByListSlug(listSlug, page = 1) {
+    const endpoint = API_CONFIG.ENDPOINTS.MOVIE_LIST.replace('[slug]', encodeURIComponent(listSlug));
+    const url = `${API_CONFIG.BASE_URL}${endpoint}?page=${page}`;
+    return await fetchAPI(url);
+}
+
+// Export các hàm để sử dụng trong các file khác
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        fetchAPI,
+        getNewMovies,
+        getCategoriesList,
+        getCountriesList,
+        getMovieDetail,
+        searchMovies,
+        getMoviesByCategory,
+        getMoviesByCountry,
+        getSingleMovies,
+        getSeriesMovies,
+        getMovieStreamLink,
+        getRecommendedMovies,
+        getMovieImages,
+        getMoviePeoples,
+        getMovieKeywords,
+        getMoviesByListSlug
+    };
+}
+// Thêm vào cuối file js/api.js
+window.getNewMovies = getNewMovies;
+window.getSingleMovies = getSingleMovies;
+window.getSeriesMovies = getSeriesMovies;
+window.getMoviesByCategory = getMoviesByCategory;
