@@ -36,10 +36,6 @@
 
         async function loadSearchResult() {
             const urlParams = new URLSearchParams(window.location.search);
-            
-            /** * SỬA LỖI TẠI ĐÂY: 
-             * main.js gửi đi là '?q=', nên ở đây phải lấy '.get('q')'
-             */
             const keyword = urlParams.get('q'); 
             
             const grid = document.getElementById('searchResultGrid');
@@ -55,11 +51,8 @@
             grid.innerHTML = '<p style="grid-column: 1/-1; padding: 20px;">🔍 Đang tìm phim, đợi xíu nhé...</p>';
 
             try {
-                // Gọi API tìm kiếm
                 const response = await fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}&limit=24`);
                 const result = await response.json();
-                
-                // Trích xuất mảng phim từ data.items
                 const movies = result.data?.items || [];
 
                 if (movies.length === 0) {
@@ -71,8 +64,6 @@
 
                 grid.innerHTML = movies.map(movie => {
                     const badge = movie.episode_current || movie.quality || "HD";
-                    
-                    // Xử lý link ảnh poster
                     const thumb = movie.thumb_url.startsWith('http') 
                         ? movie.thumb_url 
                         : `${IMAGE_HOST}${movie.thumb_url}`;
