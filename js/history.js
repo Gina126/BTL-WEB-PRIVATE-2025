@@ -5,54 +5,37 @@ let currentPage = 1;
 let totalPages = 1;
 let historyData = [];
 
-let historyGrid;
-let currentPageEl;
-let totalPageEl;
-let firstBtn, prevBtn, nextBtn, lastBtn;
-
 document.addEventListener("DOMContentLoaded", () => {
-  initElements();
-  setupPaginationEvents();
+  setupEvents();
   loadHistory();
 });
 
-function initElements() {
-  historyGrid = document.getElementById("history-grid");
-  currentPageEl = document.getElementById("currentPage");
-  totalPageEl = document.getElementById("totalPage");
-
-  firstBtn = document.getElementById("firstPage");
-  prevBtn = document.getElementById("prevPage");
-  nextBtn = document.getElementById("nextPage");
-  lastBtn = document.getElementById("lastPage");
-}
-
 function loadHistory() {
+  const grid = document.getElementById("history-grid");
+
   try {
-    const stored = localStorage.getItem(HISTORY_KEY);
-    historyData = stored ? JSON.parse(stored) : [];
-  } catch (error) {
-    console.error("History parse error:", error);
+    historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+  } catch {
     historyData = [];
   }
 
   historyData.sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt));
 
   totalPages = Math.max(1, Math.ceil(historyData.length / ITEMS_PER_PAGE));
-
   if (currentPage > totalPages) currentPage = totalPages;
 
-  renderHistory(currentPage);
+  renderHistory();
   updatePagination();
 }
 
-function renderHistory(page) {
-  historyGrid.innerHTML = "";
+function renderHistory() {
+  const grid = document.getElementById("history-grid");
+  grid.innerHTML = "";
 
-  if (historyData.length === 0) {
-    historyGrid.innerHTML = `
+  if (!historyData.length) {
+    grid.innerHTML = `
       <div style="padding:40px;text-align:center;color:#aaa">
-        <i class="fa-solid fa-film" style="font-size:48px;margin-bottom:12px;"></i>
+        <i class="fa-solid fa-film" style="font-size:48px"></i>
         <p>Bạn chưa xem phim nào.</p>
         <a href="/movies.html" style="color:var(--primary-color)">
           Xem phim ngay →
@@ -62,70 +45,54 @@ function renderHistory(page) {
     return;
   }
 
-  const start = (page - 1) * ITEMS_PER_PAGE;
-  const end = start + ITEMS_PER_PAGE;
-  const currentItems = historyData.slice(start, end);
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const items = historyData.slice(start, start + ITEMS_PER_PAGE);
 
-  currentItems.forEach((movie) => {
-    const card = createMovieCard(movie);
-    historyGrid.appendChild(card);
-  });
-}
+  for (let movie of items) {
+    const poster = movie.poster || "https://placehold.co/300x450?text=No+Image";
 
-function createMovieCard(movie) {
-  const poster = movie.poster || "https://placehold.co/300x450?text=No+Image";
+    const progressText =
+      movie.progress > 0
+        ? `Đã xem ${Math.floor(movie.progress)}%`
+        : movie.episode
+          ? `Đã xem Tập ${movie.episode}`
+          : "Đã xem";
 
-  const progressText =
-    movie.progress && movie.progress > 0
-      ? `Đã xem ${Math.floor(movie.progress)}%`
-      : movie.episode
-        ? `Đã xem Tập ${movie.episode}`
-        : "Đã xem";
+    const card = document.createElement("div");
+    card.className = "movie-card";
 
-  const card = document.createElement("div");
-  card.className = "movie-card";
-
-  card.innerHTML = `
-    <div class="movie-badges">
-      <span class="badge badge-episode">${progressText}</span>
-    </div>
-
-    <button class="btn-favorite remove-btn" title="Xoá khỏi lịch sử">
-      <i class="fa-solid fa-trash"></i>
-    </button>
-
-    <div class="movie-poster">
-      <img 
-        src="${poster}"
-        alt="${movie.name}"
-        loading="lazy"
-        onerror="this.src='https://placehold.co/300x450?text=No+Image'"
-      >
-      <div class="poster-overlay">
-        <div class="play-icon">
-          <i class="fa-solid fa-play"></i>
-        </div>
+    card.innerHTML = `
+      <div class="movie-badges">
+        <span class="badge badge-episode">${progressText}</span>
       </div>
-    </div>
 
-    <div class="movie-info">
-      <h3 class="movie-title">${movie.name}</h3>
-      <div class="movie-meta">
+      <button class="btn-favorite remove-btn">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+
+      <div class="movie-poster">
+        <img src="${poster}" alt="${movie.name}">
+      </div>
+
+      <div class="movie-info">
+        <h3>${movie.name}</h3>
         <span>Xem lần cuối: ${formatDate(movie.watchedAt)}</span>
       </div>
-    </div>
-  `;
+    `;
+    card.querySelector(".movie-poster").onclick = () => goToDetail(movie.slug);
+    card.querySelector(".movie-info h3").onclick = () => goToDetail(movie.slug);
 
-  card.querySelector(".movie-poster").addEventListener("click", () => {
-    window.location.href = `/detail.html?slug=${movie.slug}`;
-  });
+    card.querySelector(".remove-btn").onclick = (e) => {
+      e.stopPropagation();
+      removeFromHistory(movie.slug);
+    };
 
-  card.querySelector(".remove-btn").addEventListener("click", (e) => {
-    e.stopPropagation();
-    removeFromHistory(movie.slug);
-  });
+    grid.appendChild(card);
+  }
+}
 
-  return card;
+function goToDetail(slug) {
+  window.location.href = `/detail.html?slug=${encodeURIComponent(slug)}`;
 }
 
 function removeFromHistory(slug) {
@@ -134,75 +101,44 @@ function removeFromHistory(slug) {
   loadHistory();
 }
 
-function saveHistory() {
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
-}
-
 function clearAllHistory() {
   if (!confirm("Bạn có chắc muốn xoá toàn bộ lịch sử?")) return;
-
   historyData = [];
   saveHistory();
   loadHistory();
 }
 
-function updatePagination() {
-  currentPageEl.textContent = currentPage;
-  totalPageEl.textContent = totalPages;
-
-  firstBtn.disabled = currentPage === 1;
-  prevBtn.disabled = currentPage === 1;
-  nextBtn.disabled = currentPage === totalPages;
-  lastBtn.disabled = currentPage === totalPages;
+function saveHistory() {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
 }
 
-function setupPaginationEvents() {
-  firstBtn.addEventListener("click", () => changePage(1));
-  lastBtn.addEventListener("click", () => changePage(totalPages));
+function updatePagination() {
+  document.getElementById("currentPage").textContent = currentPage;
+  document.getElementById("totalPage").textContent = totalPages;
 
-  prevBtn.addEventListener("click", () => {
-    if (currentPage > 1) changePage(currentPage - 1);
-  });
+  document.getElementById("firstPage").disabled = currentPage === 1;
+  document.getElementById("prevPage").disabled = currentPage === 1;
+  document.getElementById("nextPage").disabled = currentPage === totalPages;
+  document.getElementById("lastPage").disabled = currentPage === totalPages;
+}
 
-  nextBtn.addEventListener("click", () => {
-    if (currentPage < totalPages) changePage(currentPage + 1);
-  });
+function setupEvents() {
+  document.getElementById("firstPage").onclick = () => changePage(1);
+  document.getElementById("lastPage").onclick = () => changePage(totalPages);
+  document.getElementById("prevPage").onclick = () =>
+    currentPage > 1 && changePage(currentPage - 1);
+  document.getElementById("nextPage").onclick = () =>
+    currentPage < totalPages && changePage(currentPage + 1);
 }
 
 function changePage(page) {
   currentPage = page;
-  renderHistory(page);
+  renderHistory();
   updatePagination();
 }
 
 function formatDate(dateString) {
-  if (!dateString) return "Không rõ";
-
-  const date = new Date(dateString);
-  return date.toLocaleDateString("vi-VN");
+  return dateString
+    ? new Date(dateString).toLocaleDateString("vi-VN")
+    : "Không rõ";
 }
-
-// ================== TEST DATA ==================
-// function addTestHistory() {
-//   const testData = [
-//     {
-//       slug: "naruto",
-//       name: "Naruto",
-//       poster: "https://placehold.co/300x450?text=Naruto",
-//       watchedAt: new Date().toISOString(),
-//       progress: 60,
-//       episode: 120,
-//     },
-//     {
-//       slug: "one-piece",
-//       name: "One Piece",
-//       poster: "https://placehold.co/300x450?text=One+Piece",
-//       watchedAt: new Date(Date.now() - 86400000).toISOString(),
-//       progress: 30,
-//       episode: 1000,
-//     },
-//   ];
-
-//   localStorage.setItem(HISTORY_KEY, JSON.stringify(testData));
-// }
-// addTestHistory();
