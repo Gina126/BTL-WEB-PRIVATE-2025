@@ -1,0 +1,106 @@
+/* --- RESET & CHUNG --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #0f1014;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+main {
+    flex: 1 0 auto;
+    padding-bottom: 50px;
+}
+
+/* --- BANNER (HERO) --- */
+.banner {
+    height: 75vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #0f1014, transparent),
+                linear-gradient(to right, rgba(0,0,0,0.8), transparent);
+}
+
+.banner-content {
+    position: relative;
+    z-index: 10;
+    max-width: 700px;
+    padding-left: 5%;
+}
+
+.banner-content h1 {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    line-height: 1.1;
+}
+
+.btn-watch {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 35px;
+    background: #ffd875;
+    color: black;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+/* --- MOVIE SECTION & HEADER --- */
+.movie-section { padding: 25px 0; }
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.btn-more-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    text-decoration: none;
+    font-size: 12px;
+    transition: 0.3s;
+}
+
+.btn-more-link:hover {
+    background: #ffd875;
+    color: #fff;
+    transform: translateX(3px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) { }
+@media (max-width: 768px) { }
+@media (max-width: 480px) { }

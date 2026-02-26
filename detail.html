@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết phim | Rophim</title>
+
+    <!-- Fonts & Icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/variables.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+
+    <!-- JS -->
+    <script src="./js/components.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/detail.js" defer></script>
+    <script src="./js/main.js"></script>
+
+    <style>
+      .detail-wrap {
+        padding: 16px;
+      }
+      .detail-head {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .detail-poster {
+        width: 260px;
+        flex: 0 0 260px;
+      }
+      .detail-poster img {
+        width: 100%;
+        border-radius: 12px;
+      }
+      .detail-info {
+        flex: 1;
+        min-width: 280px;
+      }
+      .detail-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        color: #bdbdbd;
+        margin: 8px 0 12px;
+      }
+      .detail-desc {
+        color: #d0d0d0;
+        line-height: 1.7;
+      }
+      .detail-row {
+        margin-top: 10px;
+        color: #d0d0d0;
+      }
+      .chip {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .episode-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .episode-btn {
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+
+      .episode-btn:hover {
+        background: #e50914;
+        border-color: #e50914;
+      }
+      /* poster be */
+      .hero-banner {
+        height: 420px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 14px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .hero-banner::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), #0f172a 95%);
+      }
+
+      /* poster to */
+      .detail-head {
+        margin-top: -160px;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* button xem */
+      .btn-watch {
+        background: #facc15;
+        color: #000;
+        padding: 12px 26px;
+        border-radius: 40px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        margin: 15px 0 20px;
+        transition: 0.2s;
+      }
+
+      .btn-watch:hover {
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="header-placeholder"></div>
+
+    <main style="padding-top: 90px; max-width: 1692px; margin: 0 auto">
+      <section class="mt-3 mb-4">
+        <div class="detail-wrap">
+          <div id="loading" style="padding: 20px; color: #aaa">
+            🎬 Đang tải thông tin phim...
+          </div>
+          <div
+            id="error"
+            style="display: none; padding: 20px; color: #ff6b6b"
+          ></div>
+
+          <div id="content" style="display: none">
+            <div id="heroBanner" class="hero-banner"></div>
+            <div class="detail-head">
+              <div class="detail-poster">
+                <img id="poster" alt="" />
+              </div>
+
+              <div class="detail-info">
+                <h2 class="section-title" style="margin: 0">
+                  <i class="fa-solid fa-film"></i>
+                  <span id="title"></span>
+                </h2>
+
+                <div class="detail-meta" id="meta"></div>
+                <div class="btn-watch" id="watchBtn">
+                  <i class="fa fa-play"></i> Xem ngay
+                </div>
+
+                <p class="detail-desc" id="desc"></p>
+
+                <div class="detail-row">
+                  <b>Thể loại:</b> <span id="categories"></span>
+                </div>
+                <div class="detail-row">
+                  <b>Quốc gia:</b> <span id="countries"></span>
+                </div>
+                <div class="detail-row">
+                  <b>Diễn viên:</b> <span id="actors"></span>
+                </div>
+                <div class="detail-row">
+                  <b>Đạo diễn:</b> <span id="directors"></span>
+                </div>
+              </div>
+            </div>
+            <hr
+              style="margin: 30px 0; border-color: rgba(255, 255, 255, 0.08)"
+            />
+            <h3 class="section-title">
+              <i class="fa-solid fa-list"></i> Danh sách tập
+            </h3>
+
+            <div id="episodeList" class="episode-grid"></div>
+
+            <!-- Recommendations Section -->
+            <section class="movie-section mt-5">
+              <div class="section-header">
+                <h2 class="section-title">CÓ THỂ BẠN SẼ THÍCH</h2>
+              </div>
+              <div class="movie-grid" id="recommendationGrid"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+  </body>
+</html>

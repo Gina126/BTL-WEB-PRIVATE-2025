@@ -10,19 +10,20 @@
  */
 async function loadComponent(elementId, componentPath) {
   try {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        // Element not found (likely already inlined or not needed), skip fetch
+        return; 
+    }
+    
     const response = await fetch(componentPath);
     if (!response.ok) {
       throw new Error(`Failed to load ${componentPath}: ${response.status}`);
     }
     const html = await response.text();
-    const element = document.getElementById(elementId);
-    if (element) {
-      element.outerHTML = html;
-    } else {
-      console.error(`Element with id "${elementId}" not found`);
-    }
+    element.outerHTML = html;
   } catch (error) {
-    console.error('Error loading component:', error);
+    console.error("Error loading component:", error);
   }
 }
 
@@ -30,21 +31,28 @@ async function loadComponent(elementId, componentPath) {
  * Load tất cả components
  */
 async function loadAllComponents() {
+  console.log('🔄 Loading components...');
   await Promise.all([
-    loadComponent('header-placeholder', './components/header.html'),
+    loadComponent('header-placeholder', './components/header.html'), // Use relative path ./
     loadComponent('footer-placeholder', './components/footer.html'),
   ]);
   
-
-  if (typeof initializeApp === 'function') {
-    initializeApp();
-  }
+  console.log('✅ Components loaded!');
+  
+  // CRITICAL FIX: Wait for DOM to render before initializing
+  // setTimeout ensures the browser has time to parse and render the HTML
+  setTimeout(() => {
+    if (typeof initializeApp === 'function') {
+      console.log('🚀 Calling initializeApp()...');
+      initializeApp();
+    } else {
+      console.error('❌ initializeApp is not defined!');
+    }
+  }, 100); // 100ms delay to ensure DOM is ready
 }
 
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', loadAllComponents);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadAllComponents);
 } else {
- 
   loadAllComponents();
 }

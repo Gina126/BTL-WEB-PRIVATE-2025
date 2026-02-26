@@ -1,5 +1,5 @@
 // ================== CONFIG ==================
-const API_URL = "https://ophim1.com/v1/api/danh-sach/phim-bo";
+const API_URL = "https://ophim1.com/v1/api/danh-sach/phim-le";
 const ITEMS_PER_PAGE = 24;
 
 // ================== STATE ==================
@@ -7,14 +7,14 @@ let currentPage = 1;
 let totalPages = 1;
 
 // ================== ELEMENTS ==================
-let seriesGrid;
+let moviesGrid;
 let currentPageEl;
 let totalPageEl;
 let firstBtn, prevBtn, nextBtn, lastBtn;
 
 // ================== INIT ==================
 document.addEventListener("DOMContentLoaded", () => {
-  seriesGrid = document.getElementById("series-grid");
+  moviesGrid = document.getElementById("movies-grid");
   currentPageEl = document.getElementById("currentPage");
   totalPageEl = document.getElementById("totalPage");
 
@@ -24,42 +24,40 @@ document.addEventListener("DOMContentLoaded", () => {
   lastBtn = document.getElementById("lastPage");
 
   setupPaginationEvents();
-  loadSeries(1);
+  loadMovies(1);
 });
 
-// ================== FETCH ==================
-async function loadSeries(page = 1) {
+// ================== FETCH MOVIES ==================
+async function loadMovies(page = 1) {
   currentPage = page;
-  renderSkeleton("series-grid", 12);
+  renderSkeleton("movies-grid", 12);
 
   try {
     const res = await fetch(`${API_URL}?page=${page}`);
     const json = await res.json();
 
     if (!json?.data?.items) {
-      throw new Error("Không có dữ liệu phim bộ");
+      throw new Error("API không trả về dữ liệu");
     }
 
     const totalItems = json.data.params.pagination.totalItems;
     totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-    renderSeries(json.data.items);
+    renderMovies(json.data.items);
     updatePagination();
-  } catch (err) {
-    console.error(err);
-    seriesGrid.innerHTML = `
+  } catch (error) {
+    console.error(error);
+    moviesGrid.innerHTML = `
       <p style="padding:20px;color:red">
-        ❌ Không thể tải danh sách phim bộ
+        ❌ Không thể tải danh sách phim
       </p>
     `;
   }
 }
 
 // ================== RENDER ==================
-function renderSeries(seriesList) {
-  seriesGrid.innerHTML = seriesList
-    .map((movie) => createMovieCard(movie))
-    .join("");
+function renderMovies(movies) {
+  moviesGrid.innerHTML = movies.map((movie) => createMovieCard(movie)).join("");
 }
 
 // ================== PAGINATION ==================
@@ -74,14 +72,14 @@ function updatePagination() {
 }
 
 function setupPaginationEvents() {
-  firstBtn.onclick = () => loadSeries(1);
-  lastBtn.onclick = () => loadSeries(totalPages);
+  firstBtn.addEventListener("click", () => loadMovies(1));
+  lastBtn.addEventListener("click", () => loadMovies(totalPages));
 
-  prevBtn.onclick = () => {
-    if (currentPage > 1) loadSeries(currentPage - 1);
-  };
+  prevBtn.addEventListener("click", () => {
+    if (currentPage > 1) loadMovies(currentPage - 1);
+  });
 
-  nextBtn.onclick = () => {
-    if (currentPage < totalPages) loadSeries(currentPage + 1);
-  };
+  nextBtn.addEventListener("click", () => {
+    if (currentPage < totalPages) loadMovies(currentPage + 1);
+  });
 }
