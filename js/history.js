@@ -1,26 +1,21 @@
-// ================== CONFIG ==================
 const HISTORY_KEY = "rophim_watch_history";
 const ITEMS_PER_PAGE = 12;
 
-// ================== STATE ==================
 let currentPage = 1;
 let totalPages = 1;
 let historyData = [];
 
-// ================== ELEMENTS ==================
 let historyGrid;
 let currentPageEl;
 let totalPageEl;
 let firstBtn, prevBtn, nextBtn, lastBtn;
 
-// ================== INIT ==================
 document.addEventListener("DOMContentLoaded", () => {
   initElements();
   setupPaginationEvents();
   loadHistory();
 });
 
-// ================== INIT ELEMENTS ==================
 function initElements() {
   historyGrid = document.getElementById("history-grid");
   currentPageEl = document.getElementById("currentPage");
@@ -32,12 +27,7 @@ function initElements() {
   lastBtn = document.getElementById("lastPage");
 }
 
-// ================== LOAD HISTORY ==================
 function loadHistory() {
-  // Hiển thị skeleton loading
-  renderSkeleton("history-grid", 12);
-
-  // Tạo một khoảng trễ nhỏ để giả lập quá trình nạp dữ liệu mượt mà
   setTimeout(() => {
     try {
       const stored = localStorage.getItem(HISTORY_KEY);
@@ -47,7 +37,6 @@ function loadHistory() {
       historyData = [];
     }
 
-    // Sắp xếp mới nhất trước
     historyData.sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt));
 
     totalPages = Math.max(1, Math.ceil(historyData.length / ITEMS_PER_PAGE));
@@ -59,7 +48,6 @@ function loadHistory() {
   }, 400);
 }
 
-// ================== RENDER ==================
 function renderHistory(page) {
   historyGrid.innerHTML = "";
 
@@ -81,13 +69,11 @@ function renderHistory(page) {
   const currentItems = historyData.slice(start, end);
 
   currentItems.forEach((movie) => {
-    // Sử dụng card chuẩn
     const cardHtml = createMovieCard(movie);
     const temp = document.createElement("div");
     temp.innerHTML = cardHtml.trim();
     const card = temp.firstChild;
 
-    // Bổ sung nút xóa lịch sử cạnh nút yêu thích
     const removeBtn = document.createElement("button");
     removeBtn.className = "btn-remove-history";
     removeBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
@@ -111,7 +97,6 @@ function renderHistory(page) {
     };
     card.appendChild(removeBtn);
 
-    // Thay đổi link mặc định cho Poster (về watch thay vì detail)
     const poster = card.querySelector(".movie-poster");
     poster.onclick = () => {
       window.location.href = `watch.html?slug=${movie.slug}&ep=${movie.episode || "1"}`;
@@ -121,19 +106,16 @@ function renderHistory(page) {
   });
 }
 
-// ================== REMOVE ==================
 function removeFromHistory(slug) {
   historyData = historyData.filter((item) => item.slug !== slug);
   saveHistory();
   loadHistory();
 }
 
-// ================== SAVE ==================
 function saveHistory() {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
 }
 
-// ================== CLEAR ALL ==================
 function clearAllHistory() {
   if (!confirm("Bạn có chắc muốn xoá toàn bộ lịch sử?")) return;
 
@@ -142,7 +124,6 @@ function clearAllHistory() {
   loadHistory();
 }
 
-// ================== PAGINATION ==================
 function updatePagination() {
   currentPageEl.textContent = currentPage;
   totalPageEl.textContent = totalPages;
@@ -172,36 +153,9 @@ function changePage(page) {
   updatePagination();
 }
 
-// ================== FORMAT DATE ==================
 function formatDate(dateString) {
   if (!dateString) return "Không rõ";
 
   const date = new Date(dateString);
   return date.toLocaleDateString("vi-VN");
 }
-
-// ================== TEST DATA ==================
-function addTestHistory() {
-  const testData = [
-    {
-      slug: "naruto",
-      name: "Naruto",
-      poster: "https://placehold.co/300x450?text=Naruto",
-      watchedAt: new Date().toISOString(),
-      progress: 60,
-      episode: 120,
-    },
-    {
-      slug: "one-piece",
-      name: "One Piece",
-      poster: "https://placehold.co/300x450?text=One+Piece",
-      watchedAt: new Date(Date.now() - 86400000).toISOString(),
-      progress: 30,
-      episode: 1000,
-    },
-  ];
-
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(testData));
-}
-
-// addTestHistory(); // ← Bỏ comment này để test, nhớ xóa sau

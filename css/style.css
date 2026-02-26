@@ -54,7 +54,6 @@ ul {
   flex-grow: 1;
 }
 
-/* Component Placeholders - Prevent layout shift */
 #header-placeholder {
   min-height: 70px;
   background-color: rgba(25, 27, 36, 0.98);
@@ -154,7 +153,6 @@ ul {
   font-weight: 400;
 }
 
-/* Quick Search Dropdown */
 .search-results-dropdown {
   position: absolute;
   top: calc(100% + 10px);
@@ -252,8 +250,14 @@ ul {
 }
 
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .el-group {
@@ -310,7 +314,6 @@ ul {
   font-weight: 500;
 }
 
-/* Dropdown Menu Styles */
 .menu-item-sub {
   position: relative;
 }
@@ -322,21 +325,20 @@ ul {
   height: 100%;
 }
 
-/* Dropdown content */
 .dropdown-content {
   position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(-10px);
-  background: rgba(10, 12, 20, 0.6); /* Giảm xuống 60% để rõ hơn */
-  backdrop-filter: blur(40px) saturate(180%); /* Tăng blur mạnh hơn */
+  background: rgba(10, 12, 20, 0.6);
+  backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   min-width: 600px;
   max-width: 900px;
   border-radius: 12px;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset; /* Inner glow */
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   padding: 20px;
   opacity: 0;
   visibility: hidden;
@@ -351,7 +353,6 @@ ul {
   transform: translateX(-50%) translateY(0);
 }
 
-/* Dropdown grid - Multi-column layout */
 .dropdown-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -361,7 +362,6 @@ ul {
   padding: 0;
 }
 
-/* Custom scrollbar for dropdown */
 .dropdown-grid::-webkit-scrollbar {
   width: 6px;
 }
@@ -380,7 +380,6 @@ ul {
   background: rgba(255, 216, 117, 0.7);
 }
 
-/* Dropdown items */
 .dropdown-item {
   display: block;
   padding: 8px 12px;
@@ -397,10 +396,8 @@ ul {
 .dropdown-item:hover {
   background-color: rgba(255, 216, 117, 0.15);
   color: #ffd875;
-  /* Removed transform to fix yellow bar glitch */
 }
 
-/* Arrow indicator for dropdown */
 .dropdown-content::before {
   content: "";
   position: absolute;
@@ -664,7 +661,6 @@ ul {
   font-size: 14px;
 }
 
-/* Scroll to Top Button (Global) */
 .scroll-to-top {
   position: fixed;
   bottom: 30px;

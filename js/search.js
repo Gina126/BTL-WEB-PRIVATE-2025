@@ -1,7 +1,3 @@
-/**
- * search.js - Logic cho trang kết quả tìm kiếm
- */
-
 document.addEventListener("DOMContentLoaded", initSearch);
 
 async function initSearch() {
@@ -31,8 +27,12 @@ async function renderSearchResults(keyword) {
 
   try {
     const res = await searchMovies(keyword);
-    
-    if (!res.success || !res.data?.data?.items || res.data.data.items.length === 0) {
+
+    if (
+      !res.success ||
+      !res.data?.data?.items ||
+      res.data.data.items.length === 0
+    ) {
       grid.innerHTML = `<div class="no-results">
                 <i class="fas fa-search"></i>
                 <p>Không tìm thấy phim nào với từ khóa "<strong>${keyword}</strong>"</p>
@@ -43,9 +43,9 @@ async function renderSearchResults(keyword) {
 
     const movies = res.data.data.items;
     grid.innerHTML = movies.map((movie) => createMovieCard(movie)).join("");
-
   } catch (error) {
     console.error("Search Page Error:", error);
-    grid.innerHTML = '<div class="error-message">Đã có lỗi xảy ra khi tải kết quả tìm kiếm.</div>';
+    grid.innerHTML =
+      '<div class="error-message">Đã có lỗi xảy ra khi tải kết quả tìm kiếm.</div>';
   }
 }

@@ -1,22 +1,18 @@
-// ================== CONFIG ==================
 const FAVORITES_KEY =
   (typeof STORAGE_KEYS !== "undefined" && STORAGE_KEYS.FAVORITES) ||
   "rophim_favorites";
 const ITEMS_PER_PAGE = 12;
 
-// ================== STATE ==================
 let currentPage = 1;
 let totalPages = 1;
 let favoritesData = [];
 
-// ================== ELEMENTS ==================
 let favoritesGrid;
 let currentPageEl;
 let totalPageEl;
 let firstBtn, prevBtn, nextBtn, lastBtn;
 let clearFavoritesBtn;
 
-// ================== INIT ==================
 document.addEventListener("DOMContentLoaded", () => {
   initElements();
   setupPaginationEvents();
@@ -24,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFavorites();
 });
 
-// ================== INIT ELEMENTS ==================
 function initElements() {
   favoritesGrid = document.getElementById("favorites-grid");
   currentPageEl = document.getElementById("currentPage");
@@ -38,14 +33,12 @@ function initElements() {
   clearFavoritesBtn = document.getElementById("clearFavoritesBtn");
 }
 
-// ================== ACTIONS ==================
 function setupActions() {
   if (clearFavoritesBtn) {
     clearFavoritesBtn.addEventListener("click", clearAllFavorites);
   }
 }
 
-// ================== LOAD ==================
 function loadFavorites() {
   if (typeof renderSkeleton === "function") {
     renderSkeleton("favorites-grid", 12);
@@ -61,7 +54,6 @@ function loadFavorites() {
       favoritesData = [];
     }
 
-    // Mới thêm trước (theo addedAt)
     favoritesData.sort(
       (a, b) => new Date(b.addedAt || 0) - new Date(a.addedAt || 0),
     );
@@ -74,7 +66,6 @@ function loadFavorites() {
   }, 250);
 }
 
-// ================== RENDER ==================
 function renderFavorites(page) {
   if (!favoritesGrid) return;
   favoritesGrid.innerHTML = "";
@@ -97,15 +88,12 @@ function renderFavorites(page) {
   const currentItems = favoritesData.slice(start, end);
 
   currentItems.forEach((movie) => {
-    // createMovieCard dùng chung của project
     const cardHtml = createMovieCard(movie);
     const temp = document.createElement("div");
     temp.innerHTML = cardHtml.trim();
     const card = temp.firstElementChild;
 
     if (!card) return;
-
-    // ✅ Ẩn icon/nút trái tim mặc định trên card ở trang Yêu thích
     const heartBtn =
       card.querySelector(".favorite-btn") ||
       card.querySelector(".btn-favorite") ||
@@ -114,10 +102,8 @@ function renderFavorites(page) {
 
     if (heartBtn) {
       heartBtn.style.display = "none";
-      // hoặc xóa hẳn: heartBtn.remove();
     }
 
-    // ✅ Nút xóa riêng (góc trái) để user thao tác nhanh
     const removeBtn = document.createElement("button");
     removeBtn.className = "btn-remove-favorite-page";
     removeBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
@@ -146,7 +132,6 @@ function renderFavorites(page) {
 
     card.appendChild(removeBtn);
 
-    // Option: thêm dòng ngày thêm (nếu muốn hiện)
     const info = card.querySelector(".movie-info");
     if (info && movie.addedAt) {
       const added = document.createElement("div");
@@ -159,12 +144,10 @@ function renderFavorites(page) {
   });
 }
 
-// ================== REMOVE ==================
 function removeFavoriteAndReload(slug) {
   if (typeof removeFromFavorites === "function") {
     removeFromFavorites(slug);
   } else {
-    // fallback nếu utils chưa load vì lý do nào đó
     favoritesData = favoritesData.filter((item) => item.slug !== slug);
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritesData));
   }
@@ -173,11 +156,9 @@ function removeFavoriteAndReload(slug) {
     showToast("Đã xóa khỏi danh sách yêu thích", "info");
   }
 
-  // reload lại từ storage để đồng bộ UI / dữ liệu
   loadFavorites();
 }
 
-// ================== CLEAR ALL ==================
 function clearAllFavorites() {
   if (favoritesData.length === 0) {
     if (typeof showToast === "function") {
@@ -198,7 +179,6 @@ function clearAllFavorites() {
   loadFavorites();
 }
 
-// ================== PAGINATION ==================
 function setupPaginationEvents() {
   if (firstBtn) firstBtn.addEventListener("click", () => changePage(1));
   if (lastBtn) lastBtn.addEventListener("click", () => changePage(totalPages));
@@ -233,7 +213,6 @@ function updatePagination() {
   if (lastBtn) lastBtn.disabled = currentPage === totalPages;
 }
 
-// ================== FORMAT ==================
 function formatDate(dateString) {
   if (!dateString) return "Không rõ";
   const date = new Date(dateString);

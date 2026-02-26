@@ -1,23 +1,3 @@
-/**
- * main.js - Logic chung cho toàn bộ website
- *
- * File này chứa logic chung như:
- * - Xử lý menu (mobile menu, dropdown)
- * - Xử lý search
- * - Xử lý scroll
- * - Dark mode (nếu có)
- * - Và các tương tác UI chung khác
- */
-
-// ⚠️ KHÔNG tự động init ở đây
-// components.js sẽ call initializeApp() sau khi load header/footer
-// document.addEventListener('DOMContentLoaded', function() {
-//     initializeApp();
-// });
-
-/**
- * Khởi tạo ứng dụng
- */
 function initializeApp() {
   setupMobileMenu();
   setupSearch();
@@ -29,9 +9,6 @@ function initializeApp() {
   setupComingSoonFeatures();
 }
 
-/**
- * Xử lý click nút yêu thích toàn cục (Event Delegation)
- */
 function setupGlobalFavoriteHandler() {
   document.addEventListener("click", function (e) {
     const btn = e.target.closest(".btn-favorite");
@@ -44,7 +21,6 @@ function setupGlobalFavoriteHandler() {
       const movieData = JSON.parse(btn.getAttribute("data-movie"));
       const isFav = toggleFavorite(movieData);
 
-      // Cập nhật tất cả các nút cùng phim trên trang (nếu có)
       const allBtns = document.querySelectorAll(
         `.btn-favorite[data-slug="${movieData.slug}"], .btn-favorite[data-movie*='"slug":"${movieData.slug}"']`,
       );
@@ -66,9 +42,6 @@ function setupGlobalFavoriteHandler() {
   });
 }
 
-/**
- * Setup mobile menu toggle
- */
 function setupMobileMenu() {
   const menuToggle = document.querySelector(".menu-toggle");
   const mainMenu = document.getElementById("main_menu");
@@ -77,7 +50,6 @@ function setupMobileMenu() {
     menuToggle.addEventListener("click", function () {
       mainMenu.classList.toggle("active");
 
-      // Toggle icon giữa bars và times
       const icon = this.querySelector("i");
       if (icon) {
         if (icon.classList.contains("fa-bars")) {
@@ -90,7 +62,6 @@ function setupMobileMenu() {
       }
     });
 
-    // Đóng menu khi click ra ngoài
     document.addEventListener("click", function (e) {
       if (!mainMenu.contains(e.target) && !menuToggle.contains(e.target)) {
         mainMenu.classList.remove("active");
@@ -104,15 +75,11 @@ function setupMobileMenu() {
   }
 }
 
-/**
- * Setup search functionality
- */
 function setupSearch() {
   const searchToggle = document.querySelector(".search-toggle");
   const searchBox = document.getElementById("search");
   const searchInput = document.getElementById("main-search");
 
-  // Toggle search box trên mobile
   if (searchToggle && searchBox) {
     searchToggle.addEventListener("click", function () {
       searchBox.classList.toggle("active");
@@ -122,9 +89,7 @@ function setupSearch() {
     });
   }
 
-  // Xử lý tìm kiếm
   if (searchInput) {
-    // Debounce search để tránh gọi API quá nhiều
     const debouncedSearch = debounce(
       handleSearch,
       APP_CONFIG.SEARCH_DEBOUNCE_TIME,
@@ -139,7 +104,6 @@ function setupSearch() {
       }
     });
 
-    // Enter để search
     searchInput.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -150,7 +114,6 @@ function setupSearch() {
       }
     });
 
-    // Đóng dropdown khi click ra ngoài
     document.addEventListener("click", function (e) {
       const searchBox = document.getElementById("search");
       if (searchBox && !searchBox.contains(e.target)) {
@@ -160,10 +123,6 @@ function setupSearch() {
   }
 }
 
-/**
- * Xử lý tìm kiếm (gọi API và hiển thị kết quả)
- * @param {string} keyword - Từ khóa tìm kiếm
- */
 async function handleSearch(keyword) {
   if (!keyword || keyword.trim().length < 2) {
     hideSearchResults();
@@ -178,11 +137,6 @@ async function handleSearch(keyword) {
   }
 }
 
-/**
- * Hiển thị kết quả tìm kiếm nhanh
- * @param {Array} movies - Danh sách phim
- * @param {string} keyword - Từ khóa
- */
 function showSearchResults(movies, keyword) {
   let searchBox = document.getElementById("search");
   let resultsDropdown = document.getElementById("search-results-dropdown");
@@ -202,27 +156,28 @@ function showSearchResults(movies, keyword) {
   }
 
   const IMAGE_HOST = "https://img.ophim.live/uploads/movies/";
-  const limitedMovies = movies.slice(0, 5); // Chỉ hiện 5 phim đầu tiên
+  const limitedMovies = movies.slice(0, 5);
 
-  let html = limitedMovies.map(movie => {
-    const thumb = movie.thumb_url.startsWith('http') 
-      ? movie.thumb_url 
-      : `${IMAGE_HOST}${movie.thumb_url}`;
-    
-    return `
+  let html = limitedMovies
+    .map((movie) => {
+      const thumb = movie.thumb_url.startsWith("http")
+        ? movie.thumb_url
+        : `${IMAGE_HOST}${movie.thumb_url}`;
+
+      return `
       <div class="search-result-item" onclick="location.href='detail.html?slug=${movie.slug}'">
         <div class="search-result-thumb">
           <img src="${thumb}" alt="${movie.name}" onerror="this.src='https://placehold.co/45x65/1a1c26/666?text=?'">
         </div>
         <div class="search-result-info">
           <div class="search-result-title">${movie.name}</div>
-          <div class="search-result-meta">${movie.year || '2024'} • ${movie.episode_current || 'Full'}</div>
+          <div class="search-result-meta">${movie.year || "2024"} • ${movie.episode_current || "Full"}</div>
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
-  // Nút xem tất cả
   html += `
     <div class="search-view-all">
       <a href="search.html?q=${encodeURIComponent(keyword)}">Xem tất cả kết quả cho "${keyword}"</a>
@@ -232,9 +187,6 @@ function showSearchResults(movies, keyword) {
   resultsDropdown.innerHTML = html;
 }
 
-/**
- * Ẩn kết quả tìm kiếm
- */
 function hideSearchResults() {
   const resultsDropdown = document.getElementById("search-results-dropdown");
   if (resultsDropdown) {
@@ -242,33 +194,19 @@ function hideSearchResults() {
   }
 }
 
-/**
- * Chuyển đến trang kết quả tìm kiếm
- * @param {string} keyword - Từ khóa
- */
 function goToSearchPage(keyword) {
   window.location.href = `search.html?q=${encodeURIComponent(keyword)}`;
 }
 
-/**
- * Render dropdown thể loại
- */
 function setupCategoryDropdown() {
   // Sẽ implement khi có UI dropdown
 }
 
-/**
- * Render dropdown quốc gia
- */
 function setupCountryDropdown() {
   // Sẽ implement khi có UI dropdown
 }
 
-/**
- * Render các dropdown menu (load từ API hoặc dữ liệu tĩnh)
- */
 async function renderMenuDropdowns() {
-  // Config cho các dropdown
   const dropdownConfigs = [
     {
       id: "nav-categories",
@@ -308,10 +246,6 @@ async function renderMenuDropdowns() {
   }
 }
 
-/**
- * Hàm dùng chung để render dropdown
- * @param {Object} config - Cấu hình của dropdown
- */
 async function renderDropdown(config) {
   const { id, type, extraClass = "" } = config;
   const container = document.getElementById(id);
@@ -358,28 +292,20 @@ async function renderDropdown(config) {
   container.appendChild(dropdownContent);
 }
 
-
-
-/**
- * Setup scroll effects (header sticky, scroll to top button, etc.)
- */
 function setupScrollEffects() {
   const header = document.getElementById("header");
   const scrollToTopBtn = document.getElementById("scroll-to-top");
   let lastScroll = 0;
 
-  // Throttle scroll event để tối ưu performance
   const handleScroll = throttle(function () {
     const currentScroll = window.pageYOffset;
 
-    // Thêm class sticky khi scroll xuống
     if (currentScroll > 100) {
       header?.classList.add("sticky");
     } else {
       header?.classList.remove("sticky");
     }
 
-    // Xử lý nút cuộn lên đầu trang
     if (scrollToTopBtn) {
       if (currentScroll > 300) {
         scrollToTopBtn.classList.add("visible");
@@ -391,7 +317,6 @@ function setupScrollEffects() {
     lastScroll = currentScroll;
   }, 100);
 
-  // Sự kiện click cho nút cuộn lên đầu
   if (scrollToTopBtn) {
     scrollToTopBtn.addEventListener("click", function () {
       window.scrollTo({
@@ -404,13 +329,7 @@ function setupScrollEffects() {
   window.addEventListener("scroll", handleScroll);
 }
 
-/**
- * Hiển thị toast notification
- * @param {string} message - Thông báo
- * @param {string} type - Loại (success, error, info)
- */
 function showToast(message, type = "info") {
-  // Đảm bảo có toast-container
   let container = document.querySelector(".toast-container");
   if (!container) {
     container = document.createElement("div");
@@ -418,7 +337,6 @@ function showToast(message, type = "info") {
     document.body.appendChild(container);
   }
 
-  // Tạo toast element
   const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
   toast.innerHTML = `
@@ -428,21 +346,14 @@ function showToast(message, type = "info") {
         <div class="toast-message">${message}</div>
     `;
 
-  // Thêm vào container
   container.appendChild(toast);
 
-  // Tự động ẩn sau 3s
   setTimeout(() => {
     toast.classList.add("toast-removing");
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
 
-/**
- * Lấy icon cho toast
- * @param {string} type - Loại toast
- * @returns {string} - Class icon
- */
 function getToastIcon(type) {
   switch (type) {
     case "success":
@@ -456,10 +367,6 @@ function getToastIcon(type) {
   }
 }
 
-/**
- * Toggle favorite
- * @param {Object} movie - Movie object
- */
 function toggleFavorite(movie) {
   if (isInFavorites(movie.slug)) {
     if (removeFromFavorites(movie.slug)) {
@@ -474,7 +381,6 @@ function toggleFavorite(movie) {
   }
 }
 
-// Export các hàm cần thiết
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     initializeApp,
@@ -483,9 +389,6 @@ if (typeof module !== "undefined" && module.exports) {
   };
 }
 
-/**
- * Hiển thị thông báo đang phát triển cho các tính năng chưa hoàn thiện
- */
 function setupComingSoonFeatures() {
   const basketball = document.getElementById("nav-basketball");
   if (basketball) {
@@ -495,24 +398,20 @@ function setupComingSoonFeatures() {
     });
   }
 
-  // Lắng nghe click vào các mục trong dropdown Quốc gia và Thể loại (Event Delegation)
   document.addEventListener("click", (e) => {
-    // 1. Nút Thành viên trên Header (Đặt lên trước để không bị return bởi logic dropdown bên dưới)
     const memberBtn = e.target.closest(".button-login");
     if (memberBtn) {
       e.preventDefault();
       e.stopPropagation();
       showToast("Vui lòng đăng nhập để sử dụng tính năng này", "info");
-      return; // Xử lý xong thì thoát luôn
+      return;
     }
 
-    // 2. Các mục đang phát triển (dropdown)
     const item = e.target.closest(".dropdown-item");
     if (!item) return;
 
-    // Kiểm tra xem item này có nằm trong dropdown Thể loại hoặc Quốc gia không
     const isUnderConstruction = item.closest("#nav-categories, #nav-countries");
-    
+
     if (isUnderConstruction) {
       e.preventDefault();
       e.stopPropagation();
