@@ -24,12 +24,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const movie = res.data.item;
 
-    // episodes có thể nằm ở 2 dạng
     let episodes = movie.episodes || res.data.episodes || [];
 
     renderMovie(movie, episodes);
-    
-    // Load recommendations
+
     loadRecommendations(movie.category);
 
     loadingEl.style.display = "none";
@@ -52,7 +50,6 @@ function renderMovie(movie, episodes) {
     ? posterRaw
     : IMAGE_HOST + posterRaw;
 
-  // thong tin phim
   document.getElementById("title").textContent = movie.name || "";
   document.getElementById("poster").src = posterUrl;
 
@@ -86,16 +83,13 @@ function renderMovie(movie, episodes) {
     ? movie.director.join(", ")
     : movie.director || "";
 
-  // lay cac tap phim
   renderEpisodes(movie.slug, episodes);
 
-  // button
   const watchBtn = document.getElementById("watchBtn");
 
   if (watchBtn) {
     watchBtn.onclick = () => {
       if (!episodes || episodes.length === 0) {
-        // phim le chi co 1 tap full
         window.location.href = `watch.html?slug=${movie.slug}&ep=1`;
         return;
       }
@@ -113,7 +107,6 @@ function renderEpisodes(slug, episodes) {
 
   if (!container) return;
 
-  // 🎬 Phim lẻ (không có episodes)
   if (!episodes || episodes.length === 0) {
     container.innerHTML = `
       <button class="episode-btn"
@@ -150,40 +143,35 @@ function goToWatch(slug, ep) {
   window.location.href = `watch.html?slug=${slug}&ep=${ep}`;
 }
 
-/**
- * Tải và hiển thị danh sách phim đề xuất
- * @param {Array} categories - Danh sách thể loại của phim hiện tại
- */
 async function loadRecommendations(categories) {
-  const grid = document.getElementById('recommendationGrid');
+  const grid = document.getElementById("recommendationGrid");
   if (!grid) return;
 
-  // Hiển thị skeleton loading
-  if (typeof renderSkeleton === 'function') {
-    renderSkeleton('recommendationGrid', 6);
+  if (typeof renderSkeleton === "function") {
+    renderSkeleton("recommendationGrid", 6);
   }
 
   try {
-    // getRecommendedMovies đã được định nghĩa global trong api.js
     const res = await getRecommendedMovies(categories, 6);
-    
+
     if (res.success && res.data?.data?.items) {
       const movies = res.data.data.items;
-      
+
       if (movies.length > 0) {
-        // Sử dụng hàm createMovieCard từ utils.js
         grid.innerHTML = movies
           .slice(0, 6)
-          .map(movie => createMovieCard(movie))
-          .join('');
+          .map((movie) => createMovieCard(movie))
+          .join("");
       } else {
-        grid.innerHTML = '<p style="grid-column: 1/-1; padding: 20px; color: #777;">Không có đề xuất phù hợp.</p>';
+        grid.innerHTML =
+          '<p style="grid-column: 1/-1; padding: 20px; color: #777;">Không có đề xuất phù hợp.</p>';
       }
     } else {
-      throw new Error('Không thể lấy dữ liệu đề xuất');
+      throw new Error("Không thể lấy dữ liệu đề xuất");
     }
   } catch (error) {
-    console.error('Error loading recommendations:', error);
-    grid.innerHTML = '<p style="grid-column: 1/-1; padding: 20px; color: #777;">Lỗi tải phim đề xuất.</p>';
+    console.error("Error loading recommendations:", error);
+    grid.innerHTML =
+      '<p style="grid-column: 1/-1; padding: 20px; color: #777;">Lỗi tải phim đề xuất.</p>';
   }
 }

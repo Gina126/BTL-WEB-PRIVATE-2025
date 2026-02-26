@@ -1,15 +1,9 @@
-/**
- * watch.js - Watch Page Logic
- * Sử dụng: api.js, utils.js, config.js, main.js
- */
 
-// State
 let currentMovie = null;
 let currentEp = "1";
-let currentServer = 0; // Index of the server in dataset
-let selectedServerIdx = 0; // Selected tab index
+let currentServer = 0;
+let selectedServerIdx = 0; 
 
-// Initialize
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
@@ -24,31 +18,25 @@ function init() {
     }
 
     loadMovie(slug);
-    // initTabs(); // Removed main tab logic
     initToolbar();
 }
 
-// Load movie data using api.js
 async function loadMovie(slug) {
     try {
         const res = await getMovieDetail(slug);
         if (!res.success) throw new Error("API failed");
 
-        // IMPORTANT: API structure is res.data.data.item
         currentMovie = res.data.data.item;
         
-        // Render immediately
         renderMovie();
         renderVideo();
         renderEpisodes();
         
-        // Load additional data async
         renderCastEnhanced(); 
         loadGallery();        
         loadRecommendations(); 
         renderRichComments(); 
         
-        // Save to history
         saveWatchHistory(currentMovie, currentEp, 0);
     } catch (e) {
         console.error("Load error:", e);
@@ -62,33 +50,24 @@ async function loadMovie(slug) {
     }
 }
 
-// Render Cast Enhanced (TMDB Peoples)
 async function renderCastEnhanced() {
     const grid = document.getElementById("cast-grid");
     if (!grid || !currentMovie) return;
     
-    // First try to load minimal cast from currentMovie (names only)
     const simpleActors = currentMovie.actor || [];
     
     try {
-        // Try fetching detailed peoples data
         const res = await getMoviePeoples(currentMovie.slug);
         
-        // If success and has cast data
         if (res.success && res.data?.data?.peoples && res.data.data.peoples.length > 0) {
             const peoples = res.data.data.peoples;
             
             grid.innerHTML = peoples.slice(0, 10).map(person => {
-                // Image Path: Use TMDB if available, else generic placeholder
                 const imgPath = person.profile_path 
                     ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
                     : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
                 
-                // Name prioritization logic: prefer Latin (ASCII) names
-                let displayName = person.name; // Default
-                
-                // Helper to check if string is Latin-based (not CJK)
-                // We check if it has NO Chinese/Japanese/Korean chars and at least SOME alphabetic chars
+                let displayName = person.name; 
                 const isLatin = (str) => !/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/.test(str) && /[a-zA-Z]/.test(str);
 
                 const candidates = [
@@ -97,13 +76,11 @@ async function renderCastEnhanced() {
                     ...(person.also_known_as || [])
                 ];
 
-                // Find first Latin name
                 const bestName = candidates.find(n => n && isLatin(n));
                 
                 if (bestName) {
                     displayName = bestName;
                 } else {
-                    // Fallback to original_name if no Latin found
                     displayName = person.original_name || person.name;
                 }
                 
@@ -126,11 +103,7 @@ async function renderCastEnhanced() {
         console.error("Cast enhanced error:", e);
     }
 
-    // Fallback to simple list if API fails or empty
-    // Filter out non-Latin names to avoid Chinese/Japanese characters
-    // Regex matches common CJK ranges
     const validSimpleActors = simpleActors.filter(name => {
-        // Must contain at least one Latin letter AND must NOT contain CJK chars
         return /[a-zA-Z]/.test(name) && !/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/.test(name);
     });
 
@@ -139,7 +112,6 @@ async function renderCastEnhanced() {
         return;
     }
 
-    // Original logic for simple actors
     grid.innerHTML = validSimpleActors.slice(0, 8).map((actor, idx) => {
         const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e'];
         const bgColor = colors[idx % colors.length];
@@ -157,7 +129,6 @@ async function renderCastEnhanced() {
 
 
 
-// Load Gallery
 async function loadGallery() {
     const grid = document.getElementById("gallery-grid");
     if (!grid || !currentMovie) return;
@@ -166,7 +137,6 @@ async function loadGallery() {
         const res = await getMovieImages(currentMovie.slug);
         if (res.success && res.data?.data?.images && res.data.data.images.length > 0) {
             const images = res.data.data.images;
-            // Mix posters and backdrops
             const backdrops = images.filter(i => i.type === 'backdrop').slice(0, 6);
             const posters = images.filter(i => i.type === 'poster').slice(0, 4);
             const gallery = [...backdrops, ...posters];
@@ -193,10 +163,6 @@ async function loadGallery() {
     }
 }
 
-// Tab switching - REMOVED (Layout is now vertical)
-// function initTabs() { ... }
-
-// Render movie info using utils.js formatters
 function renderMovie() {
     const safe = (id, val) => {
         const el = document.getElementById(id);
@@ -205,49 +171,37 @@ function renderMovie() {
 
     safe("movie-title", currentMovie.name);
     safe("movie-subtitle", currentMovie.origin_name || currentMovie.tmdb?.original_title || "");
-    
-    // IMDb Score: Prioritize IMDb field, fallback to TMDB only if missing
-    // User requested distinction between IMDb and TMDB
     safe("imdb-score", currentMovie.imdb?.rating || currentMovie.tmdb?.vote_average || "N/A");
     
-    // safe("quality", currentMovie.quality || "HD"); // Removed old badges
-    
     safe("year", formatYear(currentMovie.year));
-    // safe("duration", formatDuration(currentMovie.time)); // Removed
-
-    // Episode Info
     const totalEp = currentMovie.episode_total || "??";
     const currentEpCount = currentMovie.episode_current || "??";
     safe("episode-info", `Tập ${totalEp}`);
     
-    // Update Season Info (Mock logic if empty, usually part of name)
     const seasonMatch = currentMovie.name.match(/Phần (\d+)/i);
     safe("season-info", seasonMatch ? `Phần ${seasonMatch[1]}` : "Phần 1");
 
-    // Populate Sidebar TMDB Rating
     const sidebarRating = document.getElementById("sidebar-rating");
     if (sidebarRating) {
         sidebarRating.textContent = currentMovie.tmdb?.vote_average ? currentMovie.tmdb.vote_average.toFixed(1) : "N/A";
     }
 
-    // Completion Status
     const statusText = document.getElementById("status-text");
     const statusIcon = document.querySelector(".completion-status i");
     if (statusText) {
         if (currentEpCount === totalEp || currentMovie.status === "completed") {
             statusText.textContent = `Đã hoàn thành: ${currentEpCount} / ${totalEp} tập`;
-            statusText.parentElement.style.background = "#0f3d24"; // Green
+            statusText.parentElement.style.background = "#0f3d24"; 
             statusText.parentElement.style.color = "#2ecc71";
             if(statusIcon) statusIcon.className = "fas fa-check-circle";
         } else {
             statusText.textContent = `Đang cập nhật: ${currentEpCount} / ${totalEp} tập`;
-            statusText.parentElement.style.background = "#3d2c0f"; // Yellow/Orange
+            statusText.parentElement.style.background = "#3d2c0f"; 
             statusText.parentElement.style.color = "#f1c40f";
             if(statusIcon) statusIcon.className = "fas fa-clock";
         }
     }
 
-    // Description - Right side with "..." link to detail
     const descEl = document.getElementById("movie-description");
     if (descEl && currentMovie.content) {
         const tempDiv = document.createElement("div");
@@ -265,24 +219,19 @@ function renderMovie() {
         descEl.textContent = "Đang cập nhật mô tả...";
     }
 
-
-    // Poster
     const poster = document.getElementById("movie-poster");
     if (poster) {
         const cdnUrl = "https://img.ophim.live/uploads/movies/";
         const imgPath = currentMovie.poster_url || currentMovie.thumb_url;
-        // Add CDN domain if path doesn't start with http
         poster.src = imgPath.startsWith('http') ? imgPath : (cdnUrl + imgPath);
         poster.onerror = () => poster.src = "https://placehold.co/200x300/1a1c26/666?text=Error";
     }
 
-    // Header Title (New Back to Movie Header)
     const headerTitle = document.getElementById("header-movie-title");
     if (headerTitle) {
         headerTitle.textContent = currentMovie.name;
     }
 
-    // Genres
     const genres = document.getElementById("movie-genres");
     if (genres && currentMovie.category) {
         genres.innerHTML = currentMovie.category
@@ -290,11 +239,8 @@ function renderMovie() {
             .join("");
     }
 
-    // Update title
     document.title = `${currentMovie.name} - Xem Phim - ${APP_CONFIG.APP_NAME}`;
 }
-
-// Render video player
 function renderVideo() {
     const episodes = currentMovie.episodes;
     if (!episodes || episodes.length === 0) return;
@@ -312,7 +258,6 @@ function renderVideo() {
     const embedUrl = ep.link_embed;
 
     if (m3u8Url && m3u8Url.includes('.m3u8')) {
-        // Use Hls.js if supported
         if (iframe) iframe.style.display = "none";
         const qualitySelector = document.getElementById("quality-selector");
         
@@ -320,8 +265,8 @@ function renderVideo() {
             video.style.display = "block";
             if (Hls.isSupported()) {
                 const hls = new Hls({
-                    capLevelToPlayerSize: false, // Ensure full quality is available
-                    startLevel: -1 // Auto
+                    capLevelToPlayerSize: false, 
+                    startLevel: -1 
                 });
                 hls.loadSource(m3u8Url);
                 hls.attachMedia(video);
@@ -329,17 +274,13 @@ function renderVideo() {
                 hls.on(Hls.Events.MANIFEST_PARSED, function() {
                     video.play().catch(e => console.log("Autoplay blocked"));
                     
-                    // Setup Quality Selector
                     if (qualitySelector) {
                         qualitySelector.style.display = "block";
                         setupQualitySelector(hls);
                     }
 
-                    // Initialize Custom Controls
                     initCustomControls(video);
                 });
-
-                // Listen for level switch to update label
                 hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
                     const label = document.getElementById("current-quality-label");
                     if (label && hls.autoLevelEnabled) {
@@ -348,25 +289,21 @@ function renderVideo() {
                     }
                 });
 
-                // Auto-next on video end
                 video.onended = () => {
                     console.log("Video ended, triggering auto-next...");
                     playNextEpisode();
                 };
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // For Safari (HLS native support doesn't provide level info easily)
                 video.src = m3u8Url;
                 if (qualitySelector) qualitySelector.style.display = "none";
                 video.addEventListener('loadedmetadata', function() {
                     video.play().catch(e => console.log("Autoplay blocked"));
                 });
                 
-                // Auto-next for Safari
                 video.onended = () => playNextEpisode();
             }
         }
     } else {
-        // Fallback to Iframe
         const qualitySelector = document.getElementById("quality-selector");
         if (qualitySelector) qualitySelector.style.display = "none";
 
@@ -380,14 +317,10 @@ function renderVideo() {
         }
     }
 
-    // Update URL
     const url = `${window.location.pathname}?slug=${currentMovie.slug}&ep=${ep.name}&server=${currentServer}`;
     window.history.pushState({}, "", url);
 }
 
-/**
- * Setup Quality Selector UI and Logic
- */
 function setupQualitySelector(hls) {
     const selectorContainer = document.getElementById("quality-selector");
     const currentBtn = document.getElementById("quality-current-btn");
@@ -396,10 +329,8 @@ function setupQualitySelector(hls) {
 
     if (!currentBtn || !menu || !selectorContainer) return;
 
-    // Populate levels
     const levels = hls.levels;
     
-    // If only one level, hide the whole selector but keep HLS optimizations active
     if (levels.length <= 1) {
         selectorContainer.style.display = "none";
         return;
@@ -407,18 +338,15 @@ function setupQualitySelector(hls) {
 
     selectorContainer.style.display = "block";
 
-    // Toggle menu
     currentBtn.onclick = (e) => {
         e.stopPropagation();
         menu.classList.toggle("active");
     };
 
-    // Close menu on click outside
     document.addEventListener("click", () => menu.classList.remove("active"));
 
     let html = `<div class="quality-item ${hls.autoLevelEnabled ? 'active' : ''}" data-level="-1">Tự động (Auto)</div>`;
     
-    // Sort levels high to low
     const sortedLevels = [...levels].map((level, index) => ({ ...level, index })).sort((a, b) => b.height - a.height);
 
     html += sortedLevels.map(level => {
@@ -429,13 +357,11 @@ function setupQualitySelector(hls) {
 
     menu.innerHTML = html;
 
-    // Item click handler
     menu.querySelectorAll(".quality-item").forEach(item => {
         item.onclick = function() {
             const level = parseInt(this.getAttribute("data-level"));
             hls.currentLevel = level;
             
-            // Update UI
             menu.querySelectorAll(".quality-item").forEach(i => i.classList.remove("active"));
             this.classList.add("active");
             
@@ -450,9 +376,6 @@ function setupQualitySelector(hls) {
     });
 }
 
-/**
- * Initialize Custom Video Player Controls
- */
 function initCustomControls(video) {
     const container = document.getElementById("player-container");
     const controls = document.getElementById("custom-controls");
@@ -472,7 +395,6 @@ function initCustomControls(video) {
 
     controls.style.display = "flex";
 
-    // Play / Pause
     const togglePlay = () => {
         if (video.paused) {
             video.play();
@@ -486,11 +408,9 @@ function initCustomControls(video) {
     playPauseBtn.onclick = togglePlay;
     video.onclick = togglePlay;
 
-    // Skip 10s
     rewindBtn.onclick = () => { video.currentTime -= 10; };
     forwardBtn.onclick = () => { video.currentTime += 10; };
 
-    // Volume
     volumeSlider.oninput = (e) => {
         video.volume = e.target.value;
         updateVolumeIcon(video.volume);
@@ -515,17 +435,11 @@ function initCustomControls(video) {
         else icon.className = "fas fa-volume-up";
     }
 
-    // Seek / Progress
     video.ontimeupdate = () => {
         const percent = (video.currentTime / video.duration) * 100;
         seekbar.value = percent;
         seekbarProgress.style.width = percent + "%";
         currentTimeEl.textContent = formatTime(video.currentTime);
-        
-        // Auto-next logic check
-        if (video.currentTime === video.duration && autoNextToggle.checked) {
-            // Handled by onended, but this is a backup
-        }
     };
 
     video.onloadedmetadata = () => {
@@ -537,7 +451,6 @@ function initCustomControls(video) {
         video.currentTime = time;
     };
 
-    // Fullscreen
     fullscreenBtn.onclick = () => {
         if (!document.fullscreenElement) {
             container.requestFullscreen().catch(err => {
@@ -550,7 +463,6 @@ function initCustomControls(video) {
         }
     };
 
-    // Auto-next event refinement
     video.onended = () => {
         if (autoNextToggle.checked) {
             console.log("Auto-next enabled, switching...");
@@ -561,7 +473,6 @@ function initCustomControls(video) {
         }
     };
 
-    // Control visibility logic
     let timeout;
     container.onmousemove = () => {
         controls.classList.add("active");
@@ -571,7 +482,6 @@ function initCustomControls(video) {
         }, 3000);
     };
 
-    // Keyboard shortcuts
     document.onkeydown = (e) => {
         if (document.activeElement.tagName === "INPUT") return;
         
@@ -592,15 +502,12 @@ function formatTime(seconds) {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-// Load Seasons Logic
 async function loadSeasons(movieName, currentSeasonNum) {
     const seasonList = document.getElementById("season-list");
     if (!seasonList) return;
 
-    // 1. Extract base name (remove "Phần X", "Part X", etc.)
     const baseName = movieName.replace(/[\(\[\-]?\s*Phần \d+\s*[\)\]]?/yi, "").trim();
     
-    // 2. Search for related movies
     try {
         const res = await searchMovies(baseName);
         if (res.success && res.data?.data?.items) {
@@ -626,12 +533,10 @@ async function loadSeasons(movieName, currentSeasonNum) {
                 });
             });
 
-            // 4. Sort and Render ONLY if we found something reasonable
             if (seasonsMap.length > 0) {
                 const uniqueSeasons = Array.from(new Map(seasonsMap.map(item => [item.num, item])).values());
                 uniqueSeasons.sort((a,b) => a.num - b.num);
                 
-                // If we only found 1 season (current one), we still re-render to ensure consistency
                 seasonList.innerHTML = uniqueSeasons.map(s => {
                     const isActive = s.num === currentSeasonNum;
                     return `
@@ -645,7 +550,6 @@ async function loadSeasons(movieName, currentSeasonNum) {
         }
     } catch (e) {
         console.error("Error loading seasons:", e);
-        // On error, keep the default list (Current Season) created in init
     }
 }
 
@@ -664,7 +568,6 @@ function toggleSeasonDropdown() {
     }
 }
 
-// Update initEpisodeControls to handle outside click removal of active class
 function initEpisodeControls(episodes) {
     const serverTabs = document.getElementById("server-tabs");
     const seasonList = document.getElementById("season-list");
@@ -672,7 +575,6 @@ function initEpisodeControls(episodes) {
 
     if (!serverTabs) return;
 
-    // Render Server Tabs
     serverTabs.innerHTML = episodes.map((server, idx) => `
         <button class="server-btn ${idx === selectedServerIdx ? 'active' : ''}" 
                 onclick="switchServerTab(${idx})">
@@ -680,23 +582,18 @@ function initEpisodeControls(episodes) {
         </button>
     `).join("");
 
-    // Render Season List
     if (seasonList && currentSeasonText) {
-        // Detect current season
         const seasonMatch = currentMovie.name.match(/Phần (\d+)/i);
         const currentSeasonNum = seasonMatch ? parseInt(seasonMatch[1]) : 1;
         const currentSeasonName = `Phần ${currentSeasonNum}`;
         
         currentSeasonText.textContent = currentSeasonName;
         
-        // Initial state: just show current
         seasonList.innerHTML = `<a href="#" class="season-item active">${currentSeasonName}</a>`;
 
-        // Load other seasons async
         loadSeasons(currentMovie.name, currentSeasonNum);
     }
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
         const dropdown = document.querySelector('.season-selector');
         const content = document.getElementById("season-dropdown-content");
@@ -710,14 +607,11 @@ function initEpisodeControls(episodes) {
 function selectSeason(seasonName) {
     document.getElementById("current-season-text").textContent = seasonName;
     document.getElementById("season-dropdown-content").classList.remove("show");
-    // Logic to fetch/switch season data would go here
 }
 
-// Switch Server Tab
 function switchServerTab(idx) {
     selectedServerIdx = idx;
     
-    // Update active tab style
     document.querySelectorAll(".server-btn").forEach((btn, i) => {
         if (i === idx) btn.classList.add("active");
         else btn.classList.remove("active");
@@ -726,7 +620,6 @@ function switchServerTab(idx) {
     renderEpisodes();
 }
 
-// Render episodes grid (Updated)
 function renderEpisodes() {
     const grid = document.getElementById("episodes-grid");
     if (!grid || !currentMovie) return;
@@ -737,19 +630,16 @@ function renderEpisodes() {
         return;
     }
 
-    // Init controls if first render
     if (grid.innerHTML === "") {
         initEpisodeControls(episodes);
     }
 
     grid.innerHTML = "";
     
-    // Get episodes from SELECTED server tab
     const currentServerData = episodes[selectedServerIdx];
     if (!currentServerData) return;
 
     currentServerData.server_data.forEach(ep => {
-        // Check if this episode is currently playing
         const isPlaying = (ep.name === currentEp && selectedServerIdx === currentServer);
         
         const card = document.createElement("div");
@@ -761,15 +651,12 @@ function renderEpisodes() {
     });
 }
 
-// Play episode
 function playEpisode(epName, serverIdx) {
     currentEp = epName;
     currentServer = serverIdx;
-    selectedServerIdx = serverIdx; // Sync selection
+    selectedServerIdx = serverIdx; 
     renderVideo();
     
-    // Re-render to update active state
-    // Update tabs UI too
     document.querySelectorAll(".server-btn").forEach((btn, i) => {
         if (i === serverIdx) btn.classList.add("active");
         else btn.classList.remove("active");
@@ -781,9 +668,6 @@ function playEpisode(epName, serverIdx) {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/**
- * Handle Auto-next Episode
- */
 function playNextEpisode() {
     if (!currentMovie) return;
     
@@ -803,7 +687,6 @@ function playNextEpisode() {
     }
 }
 
-// Load recommendations async
 async function loadRecommendations() {
     const list = document.getElementById("recommendations-list");
     if (!list) return;
@@ -824,9 +707,7 @@ async function loadRecommendations() {
     }
 }
 
-// Toolbar interactions
 function initToolbar() {
-    // Lights off
     const lightsBtn = document.getElementById("lights-btn");
     lightsBtn?.addEventListener("click", () => {
         document.body.classList.toggle("lights-off");
@@ -836,7 +717,6 @@ function initToolbar() {
         }
     });
 
-    // Favorite - using main.js
     const favBtn = document.getElementById("favorite-btn");
     favBtn?.addEventListener("click", () => {
         if (!currentMovie) return;
@@ -844,7 +724,6 @@ function initToolbar() {
         updateFavButton();
     });
 
-    // Share - using utils.js
     const shareBtn = document.getElementById("share-btn");
     shareBtn?.addEventListener("click", async () => {
         if (navigator.share) {
@@ -861,7 +740,6 @@ function initToolbar() {
     });
 }
 
-// Update favorite button state
 function updateFavButton() {
     const btn = document.getElementById("favorite-btn");
     if (!btn || !currentMovie) return;
@@ -875,15 +753,14 @@ function updateFavButton() {
     }
 }
 
-// Rich Comments/Ratings Render
 const COMMENT_DATA = [
     {
         id: 1,
         type: 'comment',
         user: "ngiahan0407",
         avatar: "assets/images/defaults/default-avatar1.jpg",
-        badges: [{icon: "fas fa-infinity", color: "#f1c40f"}], // Infinity
-        sentiment: { text: "Tuyệt vời", class: "sentiment-awesome" }, // Pink/Purple gradient
+        badges: [{icon: "fas fa-infinity", color: "#f1c40f"}],
+        sentiment: { text: "Tuyệt vời", class: "sentiment-awesome" }, 
         time: "42 phút trước",
         content: "mêeeeee",
         replies: 0
@@ -893,7 +770,7 @@ const COMMENT_DATA = [
         type: 'comment',
         user: "Thanh Thảo",
         avatar: "assets/images/defaults/default-avatar2.jpg",
-        badges: [{icon: "fas fa-venus", color: "#e84393"}], // Female
+        badges: [{icon: "fas fa-venus", color: "#e84393"}], 
         sentiment: { text: "Tuyệt vời", class: "sentiment-awesome" },
         time: "một ngày trước",
         content: "kết happy ending, ai cũng dễ thương, chờ tỏ tình mòn mỏi",
@@ -937,31 +814,25 @@ const RATING_DATA = [
     }
 ];
 
-let activeCommentTab = 'comments'; // 'comments' or 'ratings'
+let activeCommentTab = 'comments'; 
 
 function renderRichComments() {
     const list = document.getElementById("rich-comment-list");
     const countDisplay = document.getElementById("comment-count-display");
-    const titleText = document.querySelector(".cmt-tab-btn"); // The main title button
-    
+    const titleText = document.querySelector(".cmt-tab-btn"); 
     if (!list) return;
 
     const data = activeCommentTab === 'comments' ? COMMENT_DATA : RATING_DATA;
     const count = data.length;
     
-    // Update Header Text & Count
     if (countDisplay) countDisplay.textContent = count;
     if (titleText) {
-        // Update the label part if needed, currently it says "Bình luận" hardcoded in HTML
-        // We can just update the count span inside it
         titleText.innerHTML = `<i class="fas fa-comment-alt"></i> ${activeCommentTab === 'comments' ? 'Bình luận' : 'Đánh giá'} ( <span id="comment-count-display">${count}</span> )`;
     }
 
     list.innerHTML = data.map(c => {
-        // Generate Badges HTML
         const badgesHtml = (c.badges || []).map(b => `<i class="${b.icon}" style="color: ${b.color}; margin-left:5px; font-size:12px;"></i>`).join("");
         
-        // Generate Sentiment HTML
         let sentimentHtml = "";
         if (c.sentiment) {
             sentimentHtml = `<span class="sentiment-badge ${c.sentiment.class}"><i class="fas fa-fire-alt"></i> ${c.sentiment.text}</span>`;
@@ -991,20 +862,16 @@ function renderRichComments() {
     `}).join("");
 }
 
-// Init Tabs for Comment Section
 document.addEventListener("DOMContentLoaded", () => {
-    // Pill Toggle Logic
     const pills = document.querySelectorAll('.toggle-pill .pill-btn');
     pills.forEach((btn, index) => {
         btn.addEventListener('click', function() {
-            // Update UI state
             pills.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             
-            // Switch Data
-            if (index === 0) { // First button = Bình luận
+            if (index === 0) { 
                 activeCommentTab = 'comments';
-            } else { // Second button = Đánh giá
+            } else { 
                 activeCommentTab = 'ratings';
             }
             renderRichComments();
@@ -1012,7 +879,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Sidebar Interaction Events
 document.addEventListener('DOMContentLoaded', () => {
     const scrollToComments = () => {
         const section = document.getElementById('comments-section');
@@ -1025,7 +891,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-comment-scroll')?.addEventListener('click', scrollToComments);
 });
 
-// Comment Submission Handler (Coming Soon)
 document.addEventListener("click", (e) => {
     if (e.target.closest(".send-btn")) {
         e.preventDefault();

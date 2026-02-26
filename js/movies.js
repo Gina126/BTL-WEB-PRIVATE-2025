@@ -1,18 +1,12 @@
-// ================== CONFIG ==================
 const API_URL = "https://ophim1.com/v1/api/danh-sach/phim-le";
 const ITEMS_PER_PAGE = 24;
 
-// ================== STATE ==================
 let currentPage = 1;
 let totalPages = 1;
 
-// ================== ELEMENTS ==================
-let moviesGrid;
-let currentPageEl;
-let totalPageEl;
+let moviesGrid, currentPageEl, totalPageEl;
 let firstBtn, prevBtn, nextBtn, lastBtn;
 
-// ================== INIT ==================
 document.addEventListener("DOMContentLoaded", () => {
   moviesGrid = document.getElementById("movies-grid");
   currentPageEl = document.getElementById("currentPage");
@@ -23,63 +17,44 @@ document.addEventListener("DOMContentLoaded", () => {
   nextBtn = document.getElementById("nextPage");
   lastBtn = document.getElementById("lastPage");
 
-  setupPaginationEvents();
+  firstBtn.onclick = () => loadMovies(1);
+  lastBtn.onclick = () => loadMovies(totalPages);
+  prevBtn.onclick = () => currentPage > 1 && loadMovies(currentPage - 1);
+  nextBtn.onclick = () =>
+    currentPage < totalPages && loadMovies(currentPage + 1);
+
   loadMovies(1);
 });
 
-// ================== FETCH MOVIES ==================
 async function loadMovies(page = 1) {
   currentPage = page;
-  renderSkeleton("movies-grid", 12);
+  moviesGrid.innerHTML = "📺 Đang tải phim...";
 
   try {
     const res = await fetch(`${API_URL}?page=${page}`);
-    const json = await res.json();
+    const data = await res.json();
+    const items = data?.data?.items;
+    const totalItems = data?.data?.params?.pagination?.totalItems;
 
-    if (!json?.data?.items) {
-      throw new Error("API không trả về dữ liệu");
+    if (!items?.length) {
+      moviesGrid.innerHTML = "❌ Không có dữ liệu phim";
+      totalPages = 1;
+      return updatePagination();
     }
 
-    const totalItems = json.data.params.pagination.totalItems;
     totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-
-    renderMovies(json.data.items);
+    moviesGrid.innerHTML = items.map(createMovieCard).join("");
     updatePagination();
-  } catch (error) {
-    console.error(error);
-    moviesGrid.innerHTML = `
-      <p style="padding:20px;color:red">
-        ❌ Không thể tải danh sách phim
-      </p>
-    `;
+  } catch (err) {
+    console.error(err);
+    moviesGrid.innerHTML = "❌ Không thể tải danh sách phim";
   }
 }
 
-// ================== RENDER ==================
-function renderMovies(movies) {
-  moviesGrid.innerHTML = movies.map((movie) => createMovieCard(movie)).join("");
-}
-
-// ================== PAGINATION ==================
 function updatePagination() {
   currentPageEl.textContent = currentPage;
   totalPageEl.textContent = totalPages;
 
-  firstBtn.disabled = currentPage === 1;
-  prevBtn.disabled = currentPage === 1;
-  nextBtn.disabled = currentPage === totalPages;
-  lastBtn.disabled = currentPage === totalPages;
-}
-
-function setupPaginationEvents() {
-  firstBtn.addEventListener("click", () => loadMovies(1));
-  lastBtn.addEventListener("click", () => loadMovies(totalPages));
-
-  prevBtn.addEventListener("click", () => {
-    if (currentPage > 1) loadMovies(currentPage - 1);
-  });
-
-  nextBtn.addEventListener("click", () => {
-    if (currentPage < totalPages) loadMovies(currentPage + 1);
-  });
+  firstBtn.disabled = prevBtn.disabled = currentPage === 1;
+  nextBtn.disabled = lastBtn.disabled = currentPage === totalPages;
 }
