@@ -116,14 +116,6 @@ function saveHistory() {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
 }
 
-function clearAllHistory() {
-  if (!confirm("Bạn có chắc muốn xoá toàn bộ lịch sử?")) return;
-
-  historyData = [];
-  saveHistory();
-  loadHistory();
-}
-
 function updatePagination() {
   currentPageEl.textContent = currentPage;
   totalPageEl.textContent = totalPages;
