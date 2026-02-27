@@ -155,14 +155,13 @@ function showSearchResults(movies, keyword) {
     return;
   }
 
-  const IMAGE_HOST = "https://img.ophim.live/uploads/movies/";
   const limitedMovies = movies.slice(0, 5);
 
   let html = limitedMovies
     .map((movie) => {
       const thumb = movie.thumb_url.startsWith("http")
         ? movie.thumb_url
-        : `${IMAGE_HOST}${movie.thumb_url}`;
+        : `${API_CONFIG.IMAGE_HOST}${movie.thumb_url}`;
 
       return `
       <div class="search-result-item" onclick="location.href='detail.html?slug=${movie.slug}'">
