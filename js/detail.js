@@ -1,4 +1,4 @@
-const IMAGE_HOST = "https://img.ophim.live/uploads/movies/";
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   const slug = new URLSearchParams(window.location.search).get("slug");
@@ -48,7 +48,7 @@ function renderMovie(movie, episodes) {
   const posterRaw = movie.poster_url || movie.thumb_url || "";
   const posterUrl = posterRaw.startsWith("http")
     ? posterRaw
-    : IMAGE_HOST + posterRaw;
+    : API_CONFIG.IMAGE_HOST + posterRaw;
 
   document.getElementById("title").textContent = movie.name || "";
   document.getElementById("poster").src = posterUrl;

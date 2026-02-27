@@ -112,7 +112,7 @@ function updateHero(movie) {
 
   if (banner) {
     const bg = movie.poster_url || movie.thumb_url || "";
-    const finalBanner = bg.startsWith("http") ? bg : `${IMAGE_HOST}${bg}`;
+    const finalBanner = bg.startsWith("http") ? bg : `${API_CONFIG.IMAGE_HOST}${bg}`;
     banner.style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.9) 30%, rgba(0,0,0,0.3) 100%), url('${finalBanner}')`;
   }
 }
