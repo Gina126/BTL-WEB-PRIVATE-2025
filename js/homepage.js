@@ -74,6 +74,7 @@ function updateHero(movie) {
   const title = document.getElementById("heroTitle");
   const desc = document.getElementById("heroDesc");
   const banner = document.getElementById("heroBanner");
+  const playBtn = document.getElementById("heroPlayBtn");
 
   const imdb = document.getElementById("heroIMDb");
   const year = document.getElementById("heroYear");
@@ -103,6 +104,10 @@ function updateHero(movie) {
       cleanContent = cleanContent.substring(0, 250) + "...";
     }
     desc.innerText = cleanContent;
+  }
+
+  if (playBtn && movie.slug) {
+    playBtn.setAttribute("href", `watch.html?slug=${movie.slug}`);
   }
 
   if (banner) {
