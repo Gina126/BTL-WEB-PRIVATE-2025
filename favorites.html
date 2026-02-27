@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phim yêu thích | Rophim</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./css/variables.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+
+    <script src="./js/config.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/components.js"></script>
+    <script src="./js/favorites.js" defer></script>
+  </head>
+
+  <body>
+    <div id="header-placeholder"></div>
+
+    <main style="padding-top: 90px; max-width: 1692px; margin: 0 auto">
+      <section class="mt-3 mb-4">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+          "
+        >
+          <h2 class="section-title" style="margin: 0">
+            <i class="fa-solid fa-heart"></i>
+            Danh sách yêu thích
+          </h2>
+
+          <button
+            id="clearFavoritesBtn"
+            class="page-btn"
+            style="padding: 10px 14px"
+            title="Xóa toàn bộ yêu thích"
+          >
+            <i class="fa-solid fa-trash-can"></i> Xóa tất cả
+          </button>
+        </div>
+
+        <div class="movie-grid" id="favorites-grid"></div>
+
+        <div class="pagination">
+          <button class="page-btn" id="firstPage" title="Về trang đầu">
+            <i class="fa-solid fa-angles-left"></i>
+          </button>
+
+          <button class="page-btn" id="prevPage" title="Trang trước">
+            <i class="fa-solid fa-angle-left"></i>
+          </button>
+
+          <span class="page-info">
+            Trang <strong id="currentPage">1</strong> /
+            <strong id="totalPage">1</strong>
+          </span>
+
+          <button class="page-btn" id="nextPage" title="Trang sau">
+            <i class="fa-solid fa-angle-right"></i>
+          </button>
+
+          <button class="page-btn" id="lastPage" title="Về trang cuối">
+            <i class="fa-solid fa-angles-right"></i>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+  </body>
+</html>

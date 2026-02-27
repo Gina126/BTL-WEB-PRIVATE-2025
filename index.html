@@ -1,13 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="index.css" />
-    <title>Document</title>
+    <title>Rophim</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./css/variables.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/homepage.css" />
+
+    <script src="./js/components.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/homepage.js"></script>
   </head>
+
   <body>
-    <h1>Hello world</h1>
+    <div id="header-placeholder"></div>
+
+    <main
+      style="
+        background: url(&quot;./assets/images/banners/home-background.jpg&quot;)
+          no-repeat center top/cover;
+      "
+      class="home"
+    >
+      <section class="banner" id="heroBanner">
+        <div class="banner-content" id="heroContent">
+          <h1 id="heroTitle">Đang tải...</h1>
+          <p id="heroDesc">Vui lòng chờ trong giây lát</p>
+          <a href="#" class="btn-watch" id="heroPlayBtn">Xem Ngay</a>
+        </div>
+      </section>
+
+      <div class="container">
+        <section class="movie-section">
+          <div class="section-header">
+            <h2 class="section-title">PHIM MỚI CẬP NHẬT</h2>
+            <a href="new-movies.html" class="btn-more-link">
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
+          </div>
+          <div class="movie-grid" id="movieGrid"></div>
+        </section>
+        <section class="movie-section">
+          <div class="section-header">
+            <h2 class="section-title">PHIM LẺ MỚI</h2>
+            <a href="movies.html" class="btn-more-link">
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
+          </div>
+          <div class="movie-grid" id="phimLeGrid"></div>
+        </section>
+
+        <section class="movie-section">
+          <div class="section-header">
+            <h2 class="section-title">PHIM BỘ MỚI</h2>
+            <a href="series.html" class="btn-more-link">
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
+          </div>
+          <div class="movie-grid" id="phimBoGrid"></div>
+        </section>
+      </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
   </body>
-  <script src="index.js"></script>
 </html>
